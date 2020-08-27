@@ -113,8 +113,10 @@ for zone,v in pairs(samples) do
         for i,file in pairs(v) do
             local group_name = 'RR'..i
             local vol = volumes[zone]
-            setup_group(groups[group_name], file, vol[1], vol[2])
-            num_rr = num_rr + 1
+            if vol ~= nil then
+                setup_group(groups[group_name], file, vol[1], vol[2])
+                num_rr = num_rr + 1
+            end
             last_file = file
         end
         if num_rr < max_rr then
@@ -122,7 +124,9 @@ for zone,v in pairs(samples) do
             for i=num_rr+1,max_rr do
                 local group_name = 'RR'..i
                 local vol = volumes[zone]
-                setup_group(groups[group_name], last_file, vol[1], vol[2])
+                if vol ~= nil then
+                    setup_group(groups[group_name], last_file, vol[1], vol[2])
+                end
             end
         end
     end   
