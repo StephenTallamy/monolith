@@ -1,14 +1,36 @@
-num_groups         = 8
+local num_zones       = 29
+local note_interval   = 3
+local min_note        = 21
+local sample_rate     = 48000
+local time_signature  = 4
+local bpm             = 115.2
 
-num_zones          = 29
-note_interval      = 3
-min_note           = 21
-sample_rate        = 48000
-time_signature     = 4
-bpm                = 115.2
-note_duration_bars = 7
-start_bar          = 1
-volumes = { F = {120,127}, MF = {96, 119}, P = {1, 95} }
+local layer_map = { 
+    F = {
+        vol_low            = 120,
+        vol_high           = 127,
+        note_duration_bars = 7,
+        start_bar          = 1
+    }, 
+    MF = {
+        vol_low            = 96, 
+        vol_high           = 119,
+        note_duration_bars = 7,
+        start_bar          = 1
+    }, 
+    P = {
+        vol_low            = 1, 
+        vol_high           = 95,
+        note_duration_bars = 7,
+        start_bar          = 1
+    },
+    RT = {
+        vol_low            = 1, 
+        vol_high           = 127,
+        note_duration_bars = 3,
+        start_bar          = 1
+    }
+}
 
 local path = scriptPath .. filesystem.preferred("/samples/")
 print("The samples are located in " .. path)
@@ -33,10 +55,14 @@ function create_group(groups, i, name)
     return group
 end
 
-function setup_group(group, file, vol_low, vol_high)  
+function setup_group(group, file, layer_info)
     print('Adding '..file..' to group '..group.name) 
-    local root = 21
-    local bar = start_bar
+    local vol_low            = layer_info['vol_low']
+    local vol_high           = layer_info['vol_high']
+    local note_duration_bars = layer_info['note_duration_bars']
+    local start_bar          = layer_info['start_bar']
+    local root               = 21
+    local bar                = start_bar
     for i=0,num_zones-1 do
         local zone         = Zone()
         local sample_start = math.floor((60 / bpm) * (bar - 1) * time_signature * sample_rate)
@@ -105,16 +131,16 @@ create_group(groups, i, 'RT')
 for zone,v in pairs(samples) do
     if (zone == 'RT') then
         for _,file in pairs(v) do
-            setup_group(groups['RT'], file, 0, 127)   
+            setup_group(groups['RT'], file, layer_map['RT'])   
         end   
     else 
         local num_rr = 0
         local last_file = nil
         for i,file in pairs(v) do
             local group_name = 'RR'..i
-            local vol = volumes[zone]
-            if vol ~= nil then
-                setup_group(groups[group_name], file, vol[1], vol[2])
+            local layer = layer_map[zone]
+            if layer ~= nil then
+                setup_group(groups[group_name], file, layer)
                 num_rr = num_rr + 1
             end
             last_file = file
@@ -123,9 +149,9 @@ for zone,v in pairs(samples) do
             print('Missing RR for '..zone..' duplicating with '..last_file)
             for i=num_rr+1,max_rr do
                 local group_name = 'RR'..i
-                local vol = volumes[zone]
-                if vol ~= nil then
-                    setup_group(groups[group_name], last_file, vol[1], vol[2])
+                local layer = layer_map[zone]
+                if layer ~= nil then
+                    setup_group(groups[group_name], last_file, layer)
                 end
             end
         end
