@@ -86,7 +86,7 @@ for _,p in filesystem.directoryRecursive(path) do
         if samples[zone_name] == nil then
             samples[zone_name] = {}
         end
-        table.insert(samples[zone_name], filename)
+        samples[zone_name][rr] = filename
       end
     end
 end
