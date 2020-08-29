@@ -29,6 +29,14 @@ local layer_map = {
     }
 }
 
+local note_map = {"C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"}
+
+function get_note_name(note_num)
+   local idx = (note_num % 12) + 1
+   local octave = math.floor(note_num / 12) - 1
+   return note_map[idx]..octave
+end
+
 local path = scriptPath .. filesystem.preferred("/samples/")
 
 function create_group(groups, i, name)
@@ -80,7 +88,7 @@ function setup_layer(groups, file, layer)
     for i=0,num_zones-1 do
         local rrs                = get_num_rr(root, layer)
         local note_duration_bars = get_note_duration_bars(root, layer)
-        
+        local note_name          = get_note_name(root)
         for rr=1,max_rr do
             local group_name   = 'RR'..rr
             if layer == 'RT' then
@@ -91,7 +99,7 @@ function setup_layer(groups, file, layer)
             local sample_start = math.floor((60 / bpm) * (bar_in - 1) * time_signature * sample_rate)
             local sample_end   = math.floor((60 / bpm) * (bar_out - 1) * time_signature * sample_rate)
             
-            print('Note '..root..' Bar In '..bar_in..' Bar Out '..bar_out..' RR '..rr..' Bars '..note_duration_bars..' Start '..sample_start.. ' End '..sample_end)        
+            print('Note '..note_name..' ('..root..') Bar In '..bar_in..' Bar Out '..bar_out..' RR '..rr..' Bars '..note_duration_bars..' Start '..sample_start.. ' End '..sample_end)        
             
             zone.rootKey       = root
             zone.keyRange.low  = math.max(root - note_interval + 1, min_note)
