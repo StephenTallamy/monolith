@@ -86,7 +86,7 @@ function setup_layer(groups, file, layer)
 
     print('Layer '..layer..' Bar In '..bar_in..' Vol Low '..vol_low..' Vol High '..vol_high)
     for i=0,num_zones-1 do
-        local rrs                = get_num_rr(root, layer)
+        local num_rrs            = get_num_rr(root, layer)
         local note_duration_bars = get_note_duration_bars(root, layer)
         local note_name          = get_note_name(root)
         for rr=1,max_rr do
@@ -95,11 +95,12 @@ function setup_layer(groups, file, layer)
                 group_name = 'RT'
             end
             local zone         = Zone()
-            local bar_out      = bar_in + note_duration_bars
-            local sample_start = math.floor((60 / bpm) * (bar_in - 1) * time_signature * sample_rate)
-            local sample_end   = math.floor((60 / bpm) * (bar_out - 1) * time_signature * sample_rate)
+            local note_bar_in  = bar_in + (((rr - 1) % num_rrs) * (note_duration_bars + 1))
+            local note_bar_out = note_bar_in + note_duration_bars
+            local sample_start = math.floor((60 / bpm) * (note_bar_in - 1) * time_signature * sample_rate)
+            local sample_end   = math.floor((60 / bpm) * (note_bar_out - 1) * time_signature * sample_rate)
             
-            print('Note '..note_name..' ('..root..') Bar In '..bar_in..' Bar Out '..bar_out..' RR '..rr..' Bars '..note_duration_bars..' Start '..sample_start.. ' End '..sample_end)        
+            print('Note '..note_name..' ('..root..') Bar In '..note_bar_in..' Bar Out '..note_bar_out..' RR '..rr..' Bars '..note_duration_bars..' Start '..sample_start.. ' End '..sample_end)        
             
             zone.rootKey       = root
             zone.keyRange.low  = math.max(root - note_interval + 1, min_note)
@@ -119,7 +120,7 @@ function setup_layer(groups, file, layer)
         end
 
         root   = root + note_interval
-        bar_in = bar_in + (note_duration_bars * rrs) + 1
+        bar_in = bar_in + ((note_duration_bars + 1) * num_rrs)
     end
 end  
 
