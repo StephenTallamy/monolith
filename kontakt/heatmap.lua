@@ -38,6 +38,7 @@ function get_note_name(note_num)
 end
 
 local path = scriptPath .. filesystem.preferred("/samples/")
+local file = path..'Test Monolith.wav'
 
 function create_group(groups, i, name)
     local group
@@ -84,7 +85,9 @@ function setup_layer(groups, file, layer)
     local root               = min_note
     local bar_in             = start_bar
 
-    print('Layer '..layer..' Bar In '..bar_in..' Vol Low '..vol_low..' Vol High '..vol_high)
+    print('------------------------------------------------------------------------------')
+    print(string.format("Layer %s Bar In %d Vol Low %d Vol High %d", layer, bar_in, vol_low, vol_high))
+    print('------------------------------------------------------------------------------')
     for i=0,num_zones-1 do
         local num_rrs            = get_num_rr(root, layer)
         local note_duration_bars = get_note_duration_bars(root, layer)
@@ -100,7 +103,7 @@ function setup_layer(groups, file, layer)
             local sample_start = math.floor((60 / bpm) * (note_bar_in - 1) * time_signature * sample_rate)
             local sample_end   = math.floor((60 / bpm) * (note_bar_out - 1) * time_signature * sample_rate)
             
-            print('Note '..note_name..' ('..root..') Bar In '..note_bar_in..' Bar Out '..note_bar_out..' RR '..rr..' Bars '..note_duration_bars..' Start '..sample_start.. ' End '..sample_end)        
+            print(string.format("Note %3s (%2d) Bar In %4d Bar Out %4d RR %d Bars %d Start %8d End %8d", note_name, root, note_bar_in, note_bar_out, rr, note_duration_bars, sample_start, sample_end))        
             
             zone.rootKey       = root
             zone.keyRange.low  = math.max(root - note_interval + 1, min_note)
@@ -136,14 +139,15 @@ function process_samples()
     end
 
     create_group(groups, i, 'RT')
-    local file = path..'Test Monolith.wav'
+    
     setup_layer(groups, file, 'F')
     setup_layer(groups, file, 'RT')
     setup_layer(groups, file, 'MF')
     setup_layer(groups, file, 'P')
 end
 
-print("The samples are located in " .. path)
+print("The samples are located in ")
+print(file)
 
 -- Check for valid instrument.
 if not instrument then
