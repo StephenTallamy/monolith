@@ -1,3 +1,8 @@
+local path = scriptPath .. filesystem.preferred("/samples/")
+local file = path..'Test Monolith.wav'
+local is_heatmap      = false
+
+
 local num_zones       = 30
 local note_interval   = 3
 local min_note        = 9
@@ -5,8 +10,6 @@ local sample_rate     = 48000
 local time_signature  = 4
 local bpm             = 115.2
 local max_rr          = 4
-
-local is_heatmap      = false
 
 local layer_map = { 
     F = {
@@ -46,9 +49,6 @@ function get_note_name(note_num)
    return note_map[idx]..octave
 end
 
-local path = scriptPath .. filesystem.preferred("/samples/")
-local file = path..'Test Monolith.wav'
-
 function create_group(groups, i, name)
     local group
     if i == 0 then
@@ -84,7 +84,7 @@ function get_num_rr(note_number, layer)
     end
 end
 
-function setup_layer(groups, file, layer)
+function setup_layer(groups, file, layer, group_prefix)
     local layer_info         = layer_map[layer]
     if layer_info == nil then
         print('Unknown layer '..layer)
@@ -104,9 +104,11 @@ function setup_layer(groups, file, layer)
         local note_duration_bars = get_note_duration_bars(root, layer)
         local note_name          = get_note_name(root)
         for rr=1,max_rr do
-            local group_name   = 'RR'..rr
+            local group_name
             if layer == 'RT' then
-                group_name = 'RT'
+                group_name = 'release_triggers'
+            else 
+                group_name = group_prefix..' rr'..rr
             end
             local zone         = Zone()
             local note_bar_in  = bar_in + (((rr - 1) % num_rrs) * (note_duration_bars + 1))
@@ -145,16 +147,18 @@ function process_samples()
 
     local groups = {}
     for i=0,max_rr-1 do
-        local group_name = 'RR'..(i+1)
+        local group_name = 'note_with_pedal rr'..(i+1)
         create_group(groups, i, group_name)
     end
 
-    create_group(groups, i, 'RT')
+    create_group(groups, i, 'release_triggers')
+    create_group(groups, i, 'pedal_up')
+    create_group(groups, i, 'pedal_down')
     
-    setup_layer(groups, file, 'F')
+    setup_layer(groups, file, 'F' , 'note_with_pedal')
+    setup_layer(groups, file, 'MF', 'note_with_pedal')
+    setup_layer(groups, file, 'P' , 'note_with_pedal')
     setup_layer(groups, file, 'RT')
-    setup_layer(groups, file, 'MF')
-    setup_layer(groups, file, 'P')
 end
 
 print("The samples are located in ")
