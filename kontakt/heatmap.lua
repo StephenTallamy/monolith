@@ -151,6 +151,11 @@ function process_samples()
         create_group(groups, i, group_name)
     end
 
+    for i=max_rr,(2 * max_rr)-1 do
+        local group_name = 'note_without_pedal rr'..(i-max_rr+1)
+        create_group(groups, i, group_name)
+    end
+
     create_group(groups, i, 'release_triggers')
     create_group(groups, i, 'pedal_up')
     create_group(groups, i, 'pedal_down')
@@ -158,6 +163,9 @@ function process_samples()
     setup_layer(groups, file, 'F' , 'note_with_pedal')
     setup_layer(groups, file, 'MF', 'note_with_pedal')
     setup_layer(groups, file, 'P' , 'note_with_pedal')
+    setup_layer(groups, file, 'F' , 'note_without_pedal')
+    setup_layer(groups, file, 'MF', 'note_without_pedal')
+    setup_layer(groups, file, 'P' , 'note_without_pedal')
     setup_layer(groups, file, 'RT')
 end
 
