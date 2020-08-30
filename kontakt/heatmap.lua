@@ -6,12 +6,19 @@ local time_signature  = 4
 local bpm             = 115.2
 local max_rr          = 4
 
+local is_heatmap      = false
+
 local layer_map = { 
     F = {
         vol_low            = 120,
         vol_high           = 127,
         start_bar          = 1
     }, 
+    RT = {
+        vol_low            = 1, 
+        vol_high           = 127,
+        start_bar          = 181
+    },
     MF = {
         vol_low            = 96, 
         vol_high           = 119,
@@ -21,13 +28,15 @@ local layer_map = {
         vol_low            = 1, 
         vol_high           = 95,
         start_bar          = 767
-    },
-    RT = {
-        vol_low            = 1, 
-        vol_high           = 127,
-        start_bar          = 181
     }
 }
+
+if not is_heatmap then
+    layer_map['RT']['start_bar'] = 212
+    layer_map['MF']['start_bar'] = 303
+    layer_map['P']['start_bar']  = 934
+    max_rr = 3
+end
 
 local note_map = {"C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"}
 
@@ -55,6 +64,7 @@ end
 
 function get_note_duration_bars(note_number, layer)
     if     layer == 'RT'    then return 2
+    elseif not is_heatmap   then return 6
     elseif note_number < 24 then return 7 -- C1
     elseif note_number < 60 then return 6 -- C4
     elseif note_number < 72 then return 5 -- C5 
@@ -65,6 +75,7 @@ end
 
 function get_num_rr(note_number, layer)
     if     layer == 'RT' or layer == 'F' then return 1
+    elseif not is_heatmap   then return 3
     elseif note_number < 24 then return 1 -- C1
     elseif note_number < 36 then return 2 -- C2
     elseif note_number < 72 then return 4 -- C5 
@@ -148,6 +159,8 @@ end
 
 print("The samples are located in ")
 print(file)
+if is_heatmap then print("Using heatmap algorithm")
+else print("Using same length algorithm") end
 
 -- Check for valid instrument.
 if not instrument then
