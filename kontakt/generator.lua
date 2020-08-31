@@ -1,9 +1,12 @@
-local num_zones       = 29
+local path = scriptPath .. filesystem.preferred("/Summer Piano Samples/")
+
+local num_zones       = 30
 local note_interval   = 3
 local min_note        = 21
 local sample_rate     = 48000
 local time_signature  = 4
 local bpm             = 115.2
+local max_rr          = 3
 
 local layer_map = { 
     F = {
@@ -32,7 +35,13 @@ local layer_map = {
     }
 }
 
-local path = scriptPath .. filesystem.preferred("/samples/")
+local note_map = {"C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"}
+
+function get_note_name(note_num)
+   local idx = (note_num % 12) + 1
+   local octave = math.floor(note_num / 12) - 2
+   return note_map[idx]..octave
+end
 
 function create_group(groups, i, name)
     local group
@@ -54,12 +63,14 @@ function setup_group(group, file, layer_info)
     local note_duration_bars = layer_info['note_duration_bars']
     local start_bar          = layer_info['start_bar']
     local root               = 21
-    local bar                = start_bar
+    local note_bar_in        = start_bar
     for i=0,num_zones-1 do
+        local note_name    = get_note_name(root)
         local zone         = Zone()
-        local sample_start = math.floor((60 / bpm) * (bar - 1) * time_signature * sample_rate)
-        local sample_end   = math.floor((60 / bpm) * (bar + note_duration_bars - 2) * time_signature * sample_rate)
-        print('Bar In '..bar..' Note '..root..' Start '..sample_start.. ' End '..sample_end)        
+        local note_bar_out = note_bar_in + note_duration_bars
+        local sample_start = math.floor((60 / bpm) * (note_bar_in - 1) * time_signature * sample_rate)
+        local sample_end   = math.floor((60 / bpm) * (note_bar_in + note_duration_bars - 2) * time_signature * sample_rate)
+        print(string.format("Note %3s (%2d) Bar In %4d Bar Out %4d Bars %d Start %8d End %8d", note_name, root, note_bar_in, note_bar_out, note_duration_bars, sample_start, sample_end))       
         
         -- Set the zone root key, high range and low range to the same values thus confining the zone to a single note.
         zone.rootKey       = root
@@ -74,7 +85,7 @@ function setup_group(group, file, layer_info)
         group.zones:add(zone)
 
         root = root + note_interval
-        bar = bar + note_duration_bars
+        note_bar_in = note_bar_in + note_duration_bars
     end
 end  
 
@@ -83,31 +94,28 @@ function process_samples()
     -- Declare an empty table which we will fill with the samples.
     local samples = {}
 
-    local max_rr = 0
     for _,p in filesystem.directoryRecursive(path) do
         if filesystem.isRegularFile(p) then
-        if filesystem.extension(p) == '.wav' or filesystem.extension(p) == '.aif' or filesystem.extension(p) == '.aiff' then
-            local filename = filesystem.filename(p)
-            local file_no_ext = filename:match("(.+)%..+")
-            local i = 0
-            local zone_name
-            local rr = 1
-            for part in file_no_ext:gmatch("%S+")do
-            if i == 0 then
-                zone_name = part
-            elseif i == 1 then
-                rr = tonumber(string.match(part, '%d'))
-                if rr > max_rr then
-                    max_rr = rr
+            if filesystem.extension(p) == '.wav' or filesystem.extension(p) == '.aif' or filesystem.extension(p) == '.aiff' then
+                local filename = filesystem.filename(p)
+                local file_no_ext = filename:match("(.+)%..+")
+                local i = 0
+                local zone_name
+                for part in file_no_ext:gmatch("%S+")do
+                    if i == 0 then
+                        if     part == 'G1' then zone_name = 'F'
+                        elseif part == 'G2' then zone_name = 'RT'
+                        elseif part == 'G3' then zone_name = 'MF RR1'
+                        elseif part == 'G4' then zone_name = 'MF RR2'
+                        elseif part == 'G5' then zone_name = 'MF RR3'
+                        elseif part == 'G6' then zone_name = 'P RR1'
+                        elseif part == 'G7' then zone_name = 'P RR2'
+                        elseif part == 'G8' then zone_name = 'P RR3'
+                        end
+                    end
                 end
+                samples[zone_name] = filename
             end
-            i = i + 1
-            end
-            if samples[zone_name] == nil then
-                samples[zone_name] = {}
-            end
-            samples[zone_name][rr] = filename
-        end
         end
     end
 
@@ -116,40 +124,48 @@ function process_samples()
 
     local groups = {}
     for i=0,max_rr-1 do
-        local group_name = 'RR'..(i+1)
+        local group_name = 'note_with_pedal rr'..(i+1)
         create_group(groups, i, group_name)
     end
 
-    create_group(groups, i, 'RT')
+    for i=max_rr,(2 * max_rr)-1 do
+        local group_name = 'note_without_pedal rr'..(i-max_rr+1)
+        create_group(groups, i, group_name)
+    end
 
-    for zone,v in pairs(samples) do
+    create_group(groups, i, 'release_triggers')
+    create_group(groups, i, 'pedal_up')
+    create_group(groups, i, 'pedal_down')
+
+    for zone,filename in pairs(samples) do
         if (zone == 'RT') then
-            for _,file in pairs(v) do
-                setup_group(groups['RT'], file, layer_map['RT'])   
-            end   
-        else 
-            local num_rr = 0
-            local last_file = nil
-            for i,file in pairs(v) do
-                local group_name = 'RR'..i
-                local layer = layer_map[zone]
-                if layer ~= nil then
-                    setup_group(groups[group_name], file, layer)
-                    num_rr = num_rr + 1
-                end
-                last_file = file
-            end
-            if num_rr < max_rr then
-                print('Missing RR for '..zone..' duplicating with '..last_file)
-                for i=num_rr+1,max_rr do
-                    local group_name = 'RR'..i
-                    local layer = layer_map[zone]
-                    if layer ~= nil then
-                        setup_group(groups[group_name], last_file, layer)
-                    end
-                end
-            end
-        end   
+            setup_group(groups['release_triggers'], filename, layer_map['RT'])
+        elseif (zone == 'F') then
+            setup_group(groups['note_with_pedal rr1'], filename, layer_map['F'])
+            setup_group(groups['note_with_pedal rr2'], filename, layer_map['F'])
+            setup_group(groups['note_with_pedal rr3'], filename, layer_map['F'])
+            setup_group(groups['note_without_pedal rr1'], filename, layer_map['F'])
+            setup_group(groups['note_without_pedal rr2'], filename, layer_map['F'])
+            setup_group(groups['note_without_pedal rr3'], filename, layer_map['F']) 
+        elseif (zone == 'MF RR1') then
+            setup_group(groups['note_with_pedal rr1'], filename, layer_map['MF'])
+            setup_group(groups['note_without_pedal rr1'], filename, layer_map['MF'])
+        elseif (zone == 'MF RR2') then
+            setup_group(groups['note_with_pedal rr2'], filename, layer_map['MF'])
+            setup_group(groups['note_without_pedal rr2'], filename, layer_map['MF'])
+        elseif (zone == 'MF RR3') then
+            setup_group(groups['note_with_pedal rr3'], filename, layer_map['MF']) 
+            setup_group(groups['note_without_pedal rr3'], filename, layer_map['MF'])
+        elseif (zone == 'P RR1') then
+            setup_group(groups['note_with_pedal rr1'], filename, layer_map['P'])
+            setup_group(groups['note_without_pedal rr1'], filename, layer_map['P'])
+        elseif (zone == 'P RR2') then
+            setup_group(groups['note_with_pedal rr2'], filename, layer_map['P'])
+            setup_group(groups['note_without_pedal rr2'], filename, layer_map['P'])
+        elseif (zone == 'P RR3') then
+            setup_group(groups['note_with_pedal rr3'], filename, layer_map['P'])     
+            setup_group(groups['note_without_pedal rr3'], filename, layer_map['P'])              
+        end 
     end
 end
 
