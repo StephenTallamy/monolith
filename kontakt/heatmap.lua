@@ -116,7 +116,7 @@ function setup_layer(groups, file, layer, group_prefix)
             local sample_start = math.floor((60 / bpm) * (note_bar_in - 1) * time_signature * sample_rate)
             local sample_end   = math.floor((60 / bpm) * (note_bar_out - 1) * time_signature * sample_rate)
             
-            print(string.format("Note %3s (%2d) Bar In %4d Bar Out %4d RR %d Bars %d Start %8d End %8d", note_name, root, note_bar_in, note_bar_out, rr, note_duration_bars, sample_start, sample_end))        
+            print(string.format("Note %3s (%3d) Bar In %4d Bar Out %4d RR %d Bars %d Start %8d End %8d", note_name, root, note_bar_in, note_bar_out, rr, note_duration_bars, sample_start, sample_end))        
             
             zone.rootKey       = root
             zone.volume        = 0

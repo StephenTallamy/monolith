@@ -70,7 +70,7 @@ function setup_group(group, file, layer_info)
         local note_bar_out = note_bar_in + note_duration_bars
         local sample_start = math.floor((60 / bpm) * (note_bar_in - 1) * time_signature * sample_rate)
         local sample_end   = math.floor((60 / bpm) * (note_bar_in + note_duration_bars - 2) * time_signature * sample_rate)
-        print(string.format("Note %3s (%2d) Bar In %4d Bar Out %4d Bars %d Start %8d End %8d", note_name, root, note_bar_in, note_bar_out, note_duration_bars, sample_start, sample_end))       
+        print(string.format("Note %3s (%3d) Bar In %4d Bar Out %4d Bars %d Start %8d End %8d", note_name, root, note_bar_in, note_bar_out, note_duration_bars, sample_start, sample_end))       
         
         -- Set the zone root key, high range and low range to the same values thus confining the zone to a single note.
         zone.rootKey       = root
