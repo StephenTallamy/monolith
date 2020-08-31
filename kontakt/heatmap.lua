@@ -1,11 +1,11 @@
 local path = scriptPath .. filesystem.preferred("/samples/")
-local file = path..'Test Monolith.wav'
-local is_heatmap      = false
+local file = path..'DOES_NOT_EXIST.wav'
+local is_heatmap      = true
 
 
 local num_zones       = 30
 local note_interval   = 3
-local min_note        = 9
+local min_note        = 21
 local sample_rate     = 48000
 local time_signature  = 4
 local bpm             = 115.2
@@ -15,22 +15,22 @@ local layer_map = {
     F = {
         vol_low            = 120,
         vol_high           = 127,
-        start_bar          = 1
+        start_bar          = 5
     }, 
     RT = {
         vol_low            = 1, 
         vol_high           = 127,
-        start_bar          = 181
+        start_bar          = 185
     },
     MF = {
         vol_low            = 96, 
         vol_high           = 119,
-        start_bar          = 272
+        start_bar          = 276
     }, 
     P = {
         vol_low            = 1, 
         vol_high           = 95,
-        start_bar          = 767
+        start_bar          = 771
     }
 }
 
@@ -45,7 +45,7 @@ local note_map = {"C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"}
 
 function get_note_name(note_num)
    local idx = (note_num % 12) + 1
-   local octave = math.floor(note_num / 12) - 1
+   local octave = math.floor(note_num / 12) - 2
    return note_map[idx]..octave
 end
 
@@ -65,10 +65,10 @@ end
 function get_note_duration_bars(note_number, layer)
     if     layer == 'RT'    then return 2
     elseif not is_heatmap   then return 6
-    elseif note_number < 24 then return 7 -- C1
-    elseif note_number < 60 then return 6 -- C4
-    elseif note_number < 72 then return 5 -- C5 
-    elseif note_number < 84 then return 3 -- C6
+    elseif note_number < 36 then return 7 -- C2
+    elseif note_number < 72 then return 6 -- C5
+    elseif note_number < 84 then return 5 -- C6 
+    elseif note_number < 96 then return 3 -- C7
     else   return 2
     end
 end
@@ -76,10 +76,10 @@ end
 function get_num_rr(note_number, layer)
     if     layer == 'RT' or layer == 'F' then return 1
     elseif not is_heatmap   then return 3
-    elseif note_number < 24 then return 1 -- C1
-    elseif note_number < 36 then return 2 -- C2
-    elseif note_number < 72 then return 4 -- C5 
-    elseif note_number < 84 then return 3 -- C6
+    elseif note_number < 36 then return 1 -- C2
+    elseif note_number < 48 then return 2 -- C3
+    elseif note_number < 84 then return 4 -- C6 
+    elseif note_number < 96 then return 3 -- C7
     else   return 2
     end
 end
@@ -119,6 +119,7 @@ function setup_layer(groups, file, layer, group_prefix)
             print(string.format("Note %3s (%2d) Bar In %4d Bar Out %4d RR %d Bars %d Start %8d End %8d", note_name, root, note_bar_in, note_bar_out, rr, note_duration_bars, sample_start, sample_end))        
             
             zone.rootKey       = root
+            zone.volume        = 0
             zone.keyRange.low  = math.max(root - note_interval + 1, min_note)
             zone.keyRange.high = root
             zone.sampleStart   = sample_start
