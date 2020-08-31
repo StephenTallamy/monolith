@@ -10,6 +10,15 @@
                 "index": 0,
                 "value": {
                     "pathDescriptor": {
+                        "path": "/heatmap.lua",
+                        "relative": true
+                    }
+                }
+            },
+            {
+                "index": 0,
+                "value": {
+                    "pathDescriptor": {
                         "path": "/generator.lua",
                         "relative": true
                     }
