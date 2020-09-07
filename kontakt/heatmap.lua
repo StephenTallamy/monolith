@@ -8,6 +8,7 @@ local sample_rate     = 48000
 local time_signature  = 4
 local bpm             = 115.2
 local max_rr          = 3
+local num_pedal_rr    = 5
 
 local flavour         = 'GIMP'
 
@@ -36,10 +37,15 @@ local layer_map = {
         start_bar          = 781,
         start_bar_pedal    = 2126 
     },
-    PEDALS = {
+    PEDAL_DOWN = {
         vol_low            = 1, 
         vol_high           = 127,
         start_bar          = 2530
+    },
+    PEDAL_UP = {
+        vol_low            = 1, 
+        vol_high           = 127,
+        start_bar          = 2532
     }
 }
 
@@ -167,19 +173,20 @@ function setup_layer(groups, file, layer, group_prefix)
     print(string.format("Layer %s Bar In %d Vol Low %d Vol High %d", layer, bar_in, vol_low, vol_high))
     print('------------------------------------------------------------------------------')
 
-    if (layer == 'PEDALS') then
-        local group_name = group_prefix
-        local rr = 1
+    if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
         local note_duration_bars = 2
-        local note_bar_in = bar_in
-        root = 64 -- matches script
-        if group_prefix == 'pedal_up' then
-            note_bar_in = note_bar_in + 2
+        if layer == 'PEDAL_UP' then
             note_duration_bars = 4
         end
-
-        local note_bar_out = bar_in + note_duration_bars
-        create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high) 
+        local note_bar_in = bar_in
+        root = 64 -- matches script
+        
+        for rr=1,num_pedal_rr do
+            local group_name = group_prefix..' rr'..rr
+            local note_bar_out = note_bar_in + note_duration_bars
+            create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high)
+            note_bar_in = note_bar_in + 6
+        end 
     else     
         for i=0,num_zones-1 do
             local num_rrs            = get_num_rr(root, layer)
@@ -226,8 +233,15 @@ function process_samples()
     end
 
     create_group(groups, i, 'release_triggers')
-    create_group(groups, i, 'pedal_down')
-    create_group(groups, i, 'pedal_up')
+
+    for i=1,num_pedal_rr do
+        local group_name = 'pedal_down rr'..i
+        create_group(groups, i, group_name)
+    end
+    for i=1,num_pedal_rr do
+        local group_name = 'pedal_up rr'..i
+        create_group(groups, i, group_name)
+    end
     
     setup_layer(groups, file, 'F' , 'note_without_pedal')
     setup_layer(groups, file, 'RT')
@@ -236,8 +250,8 @@ function process_samples()
     setup_layer(groups, file, 'F' , 'note_with_pedal')
     setup_layer(groups, file, 'MF', 'note_with_pedal')
     setup_layer(groups, file, 'P' , 'note_with_pedal')
-    setup_layer(groups, file, 'PEDALS' , 'pedal_up')
-    setup_layer(groups, file, 'PEDALS' , 'pedal_down')
+    setup_layer(groups, file, 'PEDAL_DOWN' , 'pedal_down')
+    setup_layer(groups, file, 'PEDAL_UP' , 'pedal_up')   
 end
 
 print("The samples are located in ")
