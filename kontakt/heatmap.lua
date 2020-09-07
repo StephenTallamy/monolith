@@ -8,7 +8,6 @@ local sample_rate     = 48000
 local time_signature  = 4
 local bpm             = 115.2
 local max_rr          = 3
-local 
 
 local flavour         = 'GIMP'
 
@@ -16,22 +15,27 @@ local layer_map = {
     F = {
         vol_low            = 120,
         vol_high           = 127,
-        start_bar          = 5
+        start_bar          = 5,
+        start_bar_pedal    = 1357
     }, 
     RT = {
         vol_low            = 1, 
         vol_high           = 127,
-        start_bar          = 218
+        start_bar          = 218,
+        start_bar_pedal    = 1563
+
     },
     MF = {
         vol_low            = 96, 
         vol_high           = 119,
-        start_bar          = 312
+        start_bar          = 312,
+        start_bar_pedal    = 1657   
     }, 
     P = {
         vol_low            = 1, 
         vol_high           = 95,
-        start_bar          = 781
+        start_bar          = 781,
+        start_bar_pedal    = 2126 
     }
 }
 
@@ -39,6 +43,10 @@ if flavour == 'GIMP' then
     layer_map['RT']['start_bar'] = 186
     layer_map['MF']['start_bar'] = 276
     layer_map['P']['start_bar']  = 771
+    layer_map['F']['start_bar_pedal']  = 1266
+    layer_map['RT']['start_bar_pedal'] = 1446
+    layer_map['MF']['start_bar_pedal'] = 1537
+    layer_map['P']['start_bar_pedal']  = 2032
     max_rr = 4
 end
 
@@ -121,8 +129,13 @@ function setup_layer(groups, file, layer, group_prefix)
     local vol_low            = layer_info['vol_low']
     local vol_high           = layer_info['vol_high']
     local start_bar          = layer_info['start_bar']
+    local start_bar_pedal    = layer_info['start_bar_pedal']
     local root               = min_note
     local bar_in             = start_bar
+
+    if group_prefix == 'note_with_pedal' then
+        bar_in = start_bar_pedal
+    end
 
     print('------------------------------------------------------------------------------')
     print(string.format("Layer %s Bar In %d Vol Low %d Vol High %d", layer, bar_in, vol_low, vol_high))
