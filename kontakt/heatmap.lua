@@ -166,30 +166,46 @@ function setup_layer(groups, file, layer, group_prefix)
     print('------------------------------------------------------------------------------')
     print(string.format("Layer %s Bar In %d Vol Low %d Vol High %d", layer, bar_in, vol_low, vol_high))
     print('------------------------------------------------------------------------------')
-    for i=0,num_zones-1 do
-        local num_rrs            = get_num_rr(root, layer)
-        local note_duration_bars = get_note_duration_bars(root, layer)
-        
-        for rr=1,max_rr do
-            local group_name
-            if layer == 'RT' then
-                group_name = 'release_triggers'
-            else 
-                group_name = group_prefix..' rr'..rr
-            end
-            
-            local note_bar_in  = bar_in + (((rr - 1) % num_rrs) * (note_duration_bars + 1))
-            local note_bar_out = note_bar_in + note_duration_bars
 
-            create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high)
-            
-            if layer == 'RT' then
-                break
-            end
+    if (layer == 'PEDALS') then
+        local group_name = group_prefix
+        local rr = 1
+        local note_duration_bars = 2
+        local note_bar_in = bar_in
+        root = 64 -- matches script
+        if group_prefix == 'pedal_up' then
+            note_bar_in = note_bar_in + 2
+            note_duration_bars = 4
         end
 
-        root   = root + note_interval
-        bar_in = bar_in + ((note_duration_bars + 1) * num_rrs)
+        local note_bar_out = bar_in + note_duration_bars
+        create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high) 
+    else     
+        for i=0,num_zones-1 do
+            local num_rrs            = get_num_rr(root, layer)
+            local note_duration_bars = get_note_duration_bars(root, layer)
+            
+            for rr=1,max_rr do
+                local group_name
+                if layer == 'RT' then
+                    group_name = 'release_triggers'
+                else 
+                    group_name = group_prefix..' rr'..rr
+                end
+                
+                local note_bar_in  = bar_in + (((rr - 1) % num_rrs) * (note_duration_bars + 1))
+                local note_bar_out = note_bar_in + note_duration_bars
+
+                create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high)
+                
+                if layer == 'RT' then
+                    break
+                end
+            end
+
+            root   = root + note_interval
+            bar_in = bar_in + ((note_duration_bars + 1) * num_rrs)
+        end
     end
 end  
 
@@ -210,8 +226,8 @@ function process_samples()
     end
 
     create_group(groups, i, 'release_triggers')
-    create_group(groups, i, 'pedal_up')
     create_group(groups, i, 'pedal_down')
+    create_group(groups, i, 'pedal_up')
     
     setup_layer(groups, file, 'F' , 'note_without_pedal')
     setup_layer(groups, file, 'RT')
@@ -220,6 +236,8 @@ function process_samples()
     setup_layer(groups, file, 'F' , 'note_with_pedal')
     setup_layer(groups, file, 'MF', 'note_with_pedal')
     setup_layer(groups, file, 'P' , 'note_with_pedal')
+    setup_layer(groups, file, 'PEDALS' , 'pedal_up')
+    setup_layer(groups, file, 'PEDALS' , 'pedal_down')
 end
 
 print("The samples are located in ")
