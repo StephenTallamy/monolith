@@ -1,7 +1,5 @@
 local path = scriptPath .. filesystem.preferred("/samples/")
 local file = path..'DOES_NOT_EXIST.wav'
-local is_heatmap      = true
-
 
 local num_zones       = 30
 local note_interval   = 3
@@ -9,7 +7,10 @@ local min_note        = 21
 local sample_rate     = 48000
 local time_signature  = 4
 local bpm             = 115.2
-local max_rr          = 4
+local max_rr          = 3
+local 
+
+local flavour         = 'GIMP'
 
 local layer_map = { 
     F = {
@@ -20,25 +21,25 @@ local layer_map = {
     RT = {
         vol_low            = 1, 
         vol_high           = 127,
-        start_bar          = 185
+        start_bar          = 218
     },
     MF = {
         vol_low            = 96, 
         vol_high           = 119,
-        start_bar          = 276
+        start_bar          = 312
     }, 
     P = {
         vol_low            = 1, 
         vol_high           = 95,
-        start_bar          = 771
+        start_bar          = 781
     }
 }
 
-if not is_heatmap then
-    layer_map['RT']['start_bar'] = 212
-    layer_map['MF']['start_bar'] = 303
-    layer_map['P']['start_bar']  = 934
-    max_rr = 3
+if flavour == 'GIMP' then
+    layer_map['RT']['start_bar'] = 186
+    layer_map['MF']['start_bar'] = 276
+    layer_map['P']['start_bar']  = 771
+    max_rr = 4
 end
 
 local note_map = {"C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"}
@@ -62,25 +63,52 @@ function create_group(groups, i, name)
     return group
 end
 
-function get_note_duration_bars(note_number, layer)
-    if     layer == 'RT'    then return 2
-    elseif not is_heatmap   then return 6
-    elseif note_number < 36 then return 7 -- C2
-    elseif note_number < 72 then return 6 -- C5
-    elseif note_number < 84 then return 5 -- C6 
-    elseif note_number < 96 then return 3 -- C7
+function get_note_duration_bars_v1(note_number, layer)
+    if note_number < 36 then return 7 -- C1
+    elseif note_number < 72 then return 6 -- C4
+    elseif note_number < 84 then return 5 -- C5 
+    elseif note_number < 96 then return 3 -- C6
     else   return 2
+    end
+end
+
+function get_note_duration_bars_v2(note_number, layer)
+    if note_number < 36 then return 8 -- C1
+    elseif note_number < 72 then return 7 -- C4
+    elseif note_number < 84 then return 6 -- C5 
+    elseif note_number < 96 then return 4 -- C6
+    else   return 3
+    end
+end
+
+function get_note_duration_bars(note_number, layer)
+    if     layer   == 'RT'   then return 2
+    elseif flavour == 'GIMP' then return get_note_duration_bars_v1(note_number, layer)
+    else   return get_note_duration_bars_v2(note_number, layer)
+    end
+end
+
+function get_num_rr_v1(note_number, layer)
+    if note_number < 36 then return 1 -- C1
+    elseif note_number < 48 then return 2 -- C2
+    elseif note_number < 84 then return 4 -- C5
+    elseif note_number < 96 then return 3 -- C6
+    else   return 2
+    end
+end
+
+function get_num_rr_v2(note_number, layer)
+    if note_number < 36 then return 1 -- C1
+    elseif note_number < 48 then return 2 -- C2
+    elseif note_number < 96 then return 3 -- C6
+    else   return 1
     end
 end
 
 function get_num_rr(note_number, layer)
     if     layer == 'RT' or layer == 'F' then return 1
-    elseif not is_heatmap   then return 3
-    elseif note_number < 36 then return 1 -- C2
-    elseif note_number < 48 then return 2 -- C3
-    elseif note_number < 84 then return 4 -- C6 
-    elseif note_number < 96 then return 3 -- C7
-    else   return 2
+    elseif flavour == 'GIMP' then return get_num_rr_v1(note_number, layer)
+    else   return get_num_rr_v2(note_number, layer)
     end
 end
 
@@ -161,19 +189,18 @@ function process_samples()
     create_group(groups, i, 'pedal_up')
     create_group(groups, i, 'pedal_down')
     
+    setup_layer(groups, file, 'F' , 'note_without_pedal')
+    setup_layer(groups, file, 'RT')
+    setup_layer(groups, file, 'MF', 'note_without_pedal')
+    setup_layer(groups, file, 'P' , 'note_without_pedal')
     setup_layer(groups, file, 'F' , 'note_with_pedal')
     setup_layer(groups, file, 'MF', 'note_with_pedal')
     setup_layer(groups, file, 'P' , 'note_with_pedal')
-    setup_layer(groups, file, 'F' , 'note_without_pedal')
-    setup_layer(groups, file, 'MF', 'note_without_pedal')
-    setup_layer(groups, file, 'P' , 'note_without_pedal')
-    setup_layer(groups, file, 'RT')
 end
 
 print("The samples are located in ")
 print(file)
-if is_heatmap then print("Using heatmap algorithm")
-else print("Using same length algorithm") end
+print("Using heatmap algorithm "..flavour)
 
 -- Check for valid instrument.
 if not instrument then
