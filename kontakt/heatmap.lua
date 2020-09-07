@@ -1,5 +1,5 @@
 local path = scriptPath .. filesystem.preferred("/samples/")
-local file = path..'DOES_NOT_EXIST.wav'
+local file = path..'GIMP MONOLITHS/U67.wav'
 
 local num_zones       = 30
 local note_interval   = 3
@@ -23,7 +23,6 @@ local layer_map = {
         vol_high           = 127,
         start_bar          = 218,
         start_bar_pedal    = 1563
-
     },
     MF = {
         vol_low            = 96, 
@@ -36,6 +35,11 @@ local layer_map = {
         vol_high           = 95,
         start_bar          = 781,
         start_bar_pedal    = 2126 
+    },
+    PEDALS = {
+        vol_low            = 1, 
+        vol_high           = 127,
+        start_bar          = 2530
     }
 }
 
@@ -120,6 +124,28 @@ function get_num_rr(note_number, layer)
     end
 end
 
+function create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high)
+    local note_name    = get_note_name(root)
+    local sample_start = math.floor((60 / bpm) * (note_bar_in - 1) * time_signature * sample_rate)
+    local sample_end   = math.floor((60 / bpm) * (note_bar_out - 1) * time_signature * sample_rate)
+
+    print(string.format("Note %3s (%3d) Bar In %4d Bar Out %4d RR %d Bars %d Start %8d End %8d", note_name, root, note_bar_in, note_bar_out, rr, note_duration_bars, sample_start, sample_end))        
+
+    local zone         = Zone()
+    zone.rootKey       = root
+    zone.volume        = 0
+    zone.keyRange.low  = math.max(root - note_interval + 1, min_note)
+    zone.keyRange.high = root
+    zone.sampleStart   = sample_start
+    zone.sampleEnd     = sample_end
+    zone.velocityRange.low  = vol_low
+    zone.velocityRange.high = vol_high
+
+    local group = groups[group_name]
+    zone.file = file
+    group.zones:add(zone)
+end
+
 function setup_layer(groups, file, layer, group_prefix)
     local layer_info         = layer_map[layer]
     if layer_info == nil then
@@ -143,7 +169,7 @@ function setup_layer(groups, file, layer, group_prefix)
     for i=0,num_zones-1 do
         local num_rrs            = get_num_rr(root, layer)
         local note_duration_bars = get_note_duration_bars(root, layer)
-        local note_name          = get_note_name(root)
+        
         for rr=1,max_rr do
             local group_name
             if layer == 'RT' then
@@ -151,26 +177,11 @@ function setup_layer(groups, file, layer, group_prefix)
             else 
                 group_name = group_prefix..' rr'..rr
             end
-            local zone         = Zone()
+            
             local note_bar_in  = bar_in + (((rr - 1) % num_rrs) * (note_duration_bars + 1))
             local note_bar_out = note_bar_in + note_duration_bars
-            local sample_start = math.floor((60 / bpm) * (note_bar_in - 1) * time_signature * sample_rate)
-            local sample_end   = math.floor((60 / bpm) * (note_bar_out - 1) * time_signature * sample_rate)
-            
-            print(string.format("Note %3s (%3d) Bar In %4d Bar Out %4d RR %d Bars %d Start %8d End %8d", note_name, root, note_bar_in, note_bar_out, rr, note_duration_bars, sample_start, sample_end))        
-            
-            zone.rootKey       = root
-            zone.volume        = 0
-            zone.keyRange.low  = math.max(root - note_interval + 1, min_note)
-            zone.keyRange.high = root
-            zone.sampleStart   = sample_start
-            zone.sampleEnd     = sample_end
-            zone.velocityRange.low  = vol_low
-            zone.velocityRange.high = vol_high
-            
-            local group = groups[group_name]
-            zone.file = file
-            group.zones:add(zone) 
+
+            create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high)
             
             if layer == 'RT' then
                 break
