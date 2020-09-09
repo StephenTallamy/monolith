@@ -1,5 +1,6 @@
-local path = scriptPath .. filesystem.preferred("/samples/")
-local file = path..'GIMP MONOLITHS/U67.wav'
+local path     = scriptPath .. filesystem.preferred("/samples/")
+local file     = path..'DOES_NOT_EXIST.wav'
+local flavour  = 'DEFAULT'
 
 local num_zones       = 30
 local note_interval   = 3
@@ -9,8 +10,6 @@ local time_signature  = 4
 local bpm             = 115.2
 local max_rr          = 3
 local num_pedal_rr    = 5
-
-local flavour         = 'GIMP'
 
 local layer_map = { 
     F = {
@@ -50,13 +49,25 @@ local layer_map = {
 }
 
 if flavour == 'GIMP' then
-    layer_map['RT']['start_bar'] = 186
-    layer_map['MF']['start_bar'] = 276
-    layer_map['P']['start_bar']  = 771
     layer_map['F']['start_bar_pedal']  = 1266
+    layer_map['RT']['start_bar']       = 186
     layer_map['RT']['start_bar_pedal'] = 1446
+    layer_map['MF']['start_bar']       = 276
     layer_map['MF']['start_bar_pedal'] = 1537
+    layer_map['P']['start_bar']        = 771 
     layer_map['P']['start_bar_pedal']  = 2032
+    max_rr = 4
+end
+
+if flavour == 'MODULAR' then
+    -- no P layer in MODULAR and no notes without pedal
+    layer_map['F']['vol_low']          = 97 
+    layer_map['F']['start_bar_pedal']  = 5
+    layer_map['RT']['start_bar']       = 186
+    layer_map['MF']['start_bar']       = 276
+    layer_map['MF']['start_bar_pedal'] = 276
+    layer_map['MF']['vol_low']         = 0 
+    layer_map['MF']['vol_high']        = 96    
     max_rr = 4
 end
 
@@ -101,7 +112,7 @@ end
 
 function get_note_duration_bars(note_number, layer)
     if     layer   == 'RT'   then return 2
-    elseif flavour == 'GIMP' then return get_note_duration_bars_v1(note_number, layer)
+    elseif flavour == 'GIMP' or flavour == 'MODULAR' then return get_note_duration_bars_v1(note_number, layer)
     else   return get_note_duration_bars_v2(note_number, layer)
     end
 end
@@ -125,7 +136,7 @@ end
 
 function get_num_rr(note_number, layer)
     if     layer == 'RT' or layer == 'F' then return 1
-    elseif flavour == 'GIMP' then return get_num_rr_v1(note_number, layer)
+    elseif flavour == 'GIMP' or flavour == 'MODULAR' then return get_num_rr_v1(note_number, layer)
     else   return get_num_rr_v2(note_number, layer)
     end
 end
@@ -246,12 +257,16 @@ function process_samples()
     setup_layer(groups, file, 'F' , 'note_without_pedal')
     setup_layer(groups, file, 'RT')
     setup_layer(groups, file, 'MF', 'note_without_pedal')
-    setup_layer(groups, file, 'P' , 'note_without_pedal')
+    if flavour ~= 'MODULAR' then
+        setup_layer(groups, file, 'P' , 'note_without_pedal')
+    end
     setup_layer(groups, file, 'F' , 'note_with_pedal')
     setup_layer(groups, file, 'MF', 'note_with_pedal')
-    setup_layer(groups, file, 'P' , 'note_with_pedal')
-    setup_layer(groups, file, 'PEDAL_DOWN' , 'pedal_down')
-    setup_layer(groups, file, 'PEDAL_UP' , 'pedal_up')   
+    if flavour ~= 'MODULAR' then
+        setup_layer(groups, file, 'P' , 'note_with_pedal')
+        setup_layer(groups, file, 'PEDAL_DOWN' , 'pedal_down')
+        setup_layer(groups, file, 'PEDAL_UP' , 'pedal_up') 
+    end  
 end
 
 print("The samples are located in ")
