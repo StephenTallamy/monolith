@@ -61,6 +61,7 @@ monolith = {
             layer_map['P']['start_bar']        = 771 
             layer_map['P']['start_bar_pedal']  = 2032
             monolith.max_rr = 4
+            monolith.num_pedal_rr = 4 -- need to cross-check this
         end
         
         if flavour == 'MODULAR' then
