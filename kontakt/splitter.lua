@@ -43,7 +43,9 @@ function process_layer(layer, pedal)
             local note_low = math.max(root - monolith.note_interval + 1, monolith.min_note)
 
             local sample_file = file_prefix.."_r"..root..'_lk'..note_low..'_hk'..root..'_lv'..vol_low..'_hv'..vol_high.."_rr"..rr
-            if pedal == true then
+            if layer == 'RT' then
+               sample_file = sample_file .. "_rt" 
+            elseif pedal == true then
                sample_file = sample_file .. "_pedal"
             else 
                sample_file = sample_file .. "_nopedal" 
@@ -65,8 +67,9 @@ function process_layer(layer, pedal)
 end
 
 process_layer('F', false)
---process_layer('F', true)
---process_layer('MF', false)
---process_layer('MF', true)
---process_layer('P', false)
---process_layer('P', true)
+process_layer('F', true)
+process_layer('MF', false)
+process_layer('MF', true)
+process_layer('P', false)
+process_layer('P', true)
+process_layer('RT')
