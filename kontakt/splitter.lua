@@ -1,7 +1,7 @@
 dofile("wav.lua")
-dofile("monolith.lua")
+dofile("../common/monolith.lua")
 
-local file_path     = "./samples/4006 NR.wav"
+local file_path     = "./samples/DOES_NOT_EXIST.wav"
 monolith.set_flavour("GIMP")
 
 local reader       = wav.create_context(file_path, "r")
