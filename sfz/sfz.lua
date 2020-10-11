@@ -94,10 +94,21 @@ end
 
 print('<control>')
 print('label_cc007=Volume')
+print('label_cc007=Pan')
 print('label_cc023=Notes Volume')
 print('label_cc024=RT Volume')
+print('label_cc064=Sustain Pedal')
 print('set_cc023=127')
 print('set_cc024=127')
+print('')
+
+print('<global>')
+print('ampeg_attack=0.005')
+print('ampeg_decay=0')
+print('ampeg_sustain=100')
+print('ampeg_release=0.6')
+print('ampeg_hold=0')
+print('ampeg_delay=0')
 print('')
 
 process_layer('F', false)
