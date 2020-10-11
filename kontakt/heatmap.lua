@@ -1,8 +1,8 @@
-dofile(scriptPath .. filesystem.preferred("/monolith.lua"))
+dofile(scriptPath .. filesystem.preferred("/../common/monolith.lua"))
 monolith.set_flavour('GIMP')
 
 local path     = scriptPath .. filesystem.preferred("/samples/")
-local file     = path..'4006 NR.wav'
+local file     = path..'DOES_NOT_EXIST.wav'
 
 function create_group(groups, i, name)
     local group
