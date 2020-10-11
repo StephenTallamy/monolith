@@ -11,7 +11,6 @@ function create_zone(group_name, note_bar_in, note_bar_out, note_duration_bars, 
 
     print(string.format("// Note %s Group %s RR %d Bar In %d Bar Out %d", note_name, group_name, rr, note_bar_in, note_bar_out)) 
     print('<region>')
-    print('sample=' .. file_path)
     print('hikey=' .. root)
     print('lokey=' .. note_low)
     print('pitch_keycenter=' .. root)
@@ -35,7 +34,9 @@ function process_layer(layer, pedal)
     if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
         print('<group>')
         print('group_label=Layer '..layer)
-
+        print('sample=' .. file_path)
+        print('hikey=0')
+        print('lokey=0')
         local note_duration_bars = 2
         if layer == 'PEDAL_UP' then
             note_duration_bars = 4
@@ -56,7 +57,7 @@ function process_layer(layer, pedal)
             local sample_start = monolith.get_samples(note_bar_in)
             local sample_end   = monolith.get_samples(note_bar_in+note_duration_bars)
             print('<region>')
-            print('sample=' .. file_path)
+            
             print('offset=' .. sample_start)
             print('end=' .. sample_end)
             print('seq_position=' .. rr)
@@ -67,6 +68,7 @@ function process_layer(layer, pedal)
     else 
         print('<group>')
         print('group_label=Layer '..layer)
+        print('sample=' .. file_path)
         print('lovel='..vol_low)
         print('hivel='..vol_high)
         if layer == 'RT' then
