@@ -33,15 +33,34 @@ function process_layer(layer, pedal)
 
     local file_prefix = string.sub(file_path, 0, -5)
     if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
+        print('<group>')
+        print('group_label=Layer '..layer)
+
         local note_duration_bars = 2
         if layer == 'PEDAL_UP' then
             note_duration_bars = 4
+            print('start_locc64=0')
+            print('start_hicc64=63')
+        else
+            print('start_locc64=64')
+            print('start_hicc64=127')
         end
+        print('seq_length='..monolith.num_pedal_rr)
+        print('xfin_locc25=0')
+        print('xfin_hicc25=127')
+        print('')
+
         local note_bar_in = bar_in
-        root = 64 -- matches script
-        
+
         for rr=1,monolith.num_pedal_rr do
-            
+            local sample_start = monolith.get_samples(note_bar_in)
+            local sample_end   = monolith.get_samples(note_bar_in+note_duration_bars)
+            print('<region>')
+            print('sample=' .. file_path)
+            print('offset=' .. sample_start)
+            print('end=' .. sample_end)
+            print('seq_position=' .. rr)
+            print('')
             
             note_bar_in = note_bar_in + 6
         end 
@@ -94,12 +113,16 @@ end
 
 print('<control>')
 print('label_cc007=Volume')
-print('label_cc007=Pan')
+print('label_cc0010=Pan')
 print('label_cc023=Notes Volume')
 print('label_cc024=RT Volume')
+print('label_cc025=Pedal Volume')
 print('label_cc064=Sustain Pedal')
+print('set_cc007=127')
+print('set_cc010=64')
 print('set_cc023=127')
 print('set_cc024=127')
+print('set_cc025=127')
 print('')
 
 print('<global>')
@@ -118,5 +141,5 @@ process_layer('MF', true)
 process_layer('P', false)
 process_layer('P', true)
 process_layer('RT')
---process_layer('PEDAL_UP')
---process_layer('PEDAL_DOWN')
+process_layer('PEDAL_UP')
+process_layer('PEDAL_DOWN')
