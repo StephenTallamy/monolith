@@ -77,7 +77,7 @@ function process_layer(layer, pedal)
         end 
     else 
         print('<group>')
-        print('group_label=Layer '..layer)
+        local group_label
         print('sample=' .. file_path)
         print('lovel='..vol_low)
         print('hivel='..vol_high)
@@ -90,19 +90,24 @@ function process_layer(layer, pedal)
             print('xfin_hicc24=127')
             print('loop_mode=one_shot')
             print('rt_decay=6')
+            group_label = 'Release Triggers'
         else
             print('volume='..note_volume)
             print('xfin_locc23=0')
             print('xfin_hicc23=127')
             print('seq_length='..monolith.max_rr)
+            group_label = 'Layer '..layer
             if (pedal) then
+                group_label = group_label .. ' (with pedal)'
                 print('locc64=64') 
                 print('hicc64=127')
             else
+                group_label = group_label .. ' (without pedal)'
                 print('locc64=0') 
                 print('hicc64=63')
             end
         end
+        print('group_label='..group_label)
         print('')
 
         for i=0,monolith.num_zones-1 do
