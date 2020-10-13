@@ -3,6 +3,15 @@ dofile("../common/monolith.lua")
 local file_path     = "./samples/DOES_NOT_EXIST.wav"
 monolith.set_flavour("GIMP")
 
+local note_volume=20
+local rt_volume=25
+local pedal_volume=5
+local tuning_adjustment=0
+
+if (monolith.flavour == 'GIMP') then
+    tuning_adjustment=30
+end
+
 function create_zone(group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high)
     local note_name    = monolith.get_note_name(root)
     local sample_start = monolith.get_samples(note_bar_in)
@@ -37,6 +46,7 @@ function process_layer(layer, pedal)
         print('sample=' .. file_path)
         print('hikey=0')
         print('lokey=0')
+        print('volume='..pedal_volume)
         local note_duration_bars = 2
         if layer == 'PEDAL_UP' then
             note_duration_bars = 4
@@ -71,7 +81,9 @@ function process_layer(layer, pedal)
         print('sample=' .. file_path)
         print('lovel='..vol_low)
         print('hivel='..vol_high)
+        print('tune='..tuning_adjustment)
         if layer == 'RT' then
+            print('volume='..rt_volume)
             print('trigger=release_key')
             print('seq_length=1')
             print('xfin_locc24=0')
@@ -79,6 +91,7 @@ function process_layer(layer, pedal)
             print('loop_mode=one_shot')
             print('rt_decay=6')
         else
+            print('volume='..note_volume)
             print('xfin_locc23=0')
             print('xfin_hicc23=127')
             print('seq_length='..monolith.max_rr)
