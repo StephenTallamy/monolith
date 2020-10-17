@@ -1,7 +1,7 @@
 
 if #arg < 1 then
     print('Usage:')
-    print('  lua sfz.lua [filepath] (flavour)')
+    print('  lua sfz.lua [filepath] (flavour) (use_split)')
     return
 end
 
@@ -11,6 +11,12 @@ local flavour = 'DEFAULT'
 
 if #arg > 1 then
     flavour = arg[2]
+end
+
+local using_split = false;
+
+if #arg > 2 then
+    using_split = arg[3] == 'true'
 end
 
 dofile("../common/monolith.lua")
@@ -26,19 +32,24 @@ if (monolith.flavour == 'GIMP') then
     tuning_adjustment=30
 end
 
-function create_zone(group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high)
+function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, use_rr, vol_low, vol_high, file_prefix)
     local note_name    = monolith.get_note_name(root)
-    local sample_start = monolith.get_samples(note_bar_in)
-    local sample_end   = monolith.get_samples(note_bar_out)
     local note_low     = math.max(root - monolith.note_interval + 1, monolith.min_note)
-
+    
     print(string.format("// Note %s Group %s RR %d Bar In %d Bar Out %d", note_name, group_name, rr, note_bar_in, note_bar_out)) 
     print('<region>')
+    if using_split then 
+        local sample_file = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, use_rr)
+        print('sample='..sample_file)
+    else
+        local sample_start = monolith.get_samples(note_bar_in)
+        local sample_end   = monolith.get_samples(note_bar_out)
+        print('offset=' .. sample_start)
+        print('end=' .. sample_end)
+    end
     print('hikey=' .. root)
     print('lokey=' .. note_low)
-    print('pitch_keycenter=' .. root)
-    print('offset=' .. sample_start)
-    print('end=' .. sample_end)
+    print('pitch_keycenter=' .. root) 
     print('seq_position=' .. rr)
     print('')
 end
@@ -57,7 +68,9 @@ function process_layer(layer, pedal)
     if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
         print('<group>')
         print('group_label=Layer '..layer)
-        print('sample=' .. file_path)
+        if using_split == false then
+            print('sample=' .. file_path)
+        end
         print('hikey=0')
         print('lokey=0')
         print('volume='..pedal_volume)
@@ -81,9 +94,13 @@ function process_layer(layer, pedal)
             local sample_start = monolith.get_samples(note_bar_in)
             local sample_end   = monolith.get_samples(note_bar_in+note_duration_bars)
             print('<region>')
-            
-            print('offset=' .. sample_start)
-            print('end=' .. sample_end)
+            if using_split then 
+                local sample_file = monolith.get_file_name(file_prefix, layer, 64, 64, 64, vol_low, vol_high, rr)
+                print('sample='..sample_file)
+            else
+                print('offset=' .. sample_start)
+                print('end=' .. sample_end)
+            end
             print('seq_position=' .. rr)
             print('')
             
@@ -92,7 +109,9 @@ function process_layer(layer, pedal)
     else 
         print('<group>')
         local group_label
-        print('sample=' .. file_path)
+        if using_split == false then
+            print('sample=' .. file_path)
+        end
         print('lovel='..vol_low)
         print('hivel='..vol_high)
         print('tune='..tuning_adjustment)
@@ -128,11 +147,12 @@ function process_layer(layer, pedal)
             local num_rrs            = monolith.get_num_rr(root, layer)
             local note_duration_bars = monolith.get_note_duration_bars(root, layer)
             
-            for rr=1,monolith.max_rr do                
-                local note_bar_in  = bar_in + (((rr - 1) % num_rrs) * (note_duration_bars + 1))
+            for rr=1,monolith.max_rr do   
+                local use_rr       = (rr - 1) % num_rrs             
+                local note_bar_in  = bar_in + (use_rr * (note_duration_bars + 1))
                 local note_bar_out = note_bar_in + note_duration_bars
 
-                create_zone(layer, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high)
+                create_zone(layer, layer, note_bar_in, note_bar_out, note_duration_bars, root, rr, use_rr + 1, vol_low, vol_high, file_prefix)
                 
                 if layer == 'RT' then
                     break
