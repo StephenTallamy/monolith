@@ -7,5 +7,6 @@
 *.zip
 *.sfz
 *.dspreset
+*.dslibrary
 Resources/
 samples/
