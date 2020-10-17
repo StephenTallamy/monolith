@@ -1,7 +1,15 @@
+
+if #arg < 1 then
+    print('Usage:')
+    print('  lua splitter.lua [filepath]')
+    return
+end
+
+local file_path = arg[1]
+
 dofile("wav.lua")
 dofile("../common/monolith.lua")
 
-local file_path     = "./samples/DOES_NOT_EXIST.wav"
 monolith.set_flavour("GIMP")
 
 local reader       = wav.create_context(file_path, "r")
@@ -32,24 +40,6 @@ function copy_samples(note_name, bar_in, note_duration_bars, reader, sample_file
     writer.finish()
 end
 
-function get_file_name(file_prefix, layer, root, note_low, note_high, vol_low, vol_high, rr)
-    local sample_file = file_prefix.."_r"..root..'_lk'..note_low..'_hk'..note_high..'_lv'..vol_low..'_hv'..vol_high.."_rr"..rr
-    if layer == 'RT' then
-        sample_file = sample_file .. "_rt" 
-    elseif layer == 'PEDAL_UP' then
-        sample_file = sample_file .. "_pedal_up" 
-    elseif layer == 'PEDAL_DOWN' then
-        sample_file = sample_file .. "_pedal_down"             
-    elseif pedal == true then
-        sample_file = sample_file .. "_withpedal"
-    else 
-        sample_file = sample_file .. "_nopedal" 
-    end
-    sample_file = sample_file..".wav"
-
-    return sample_file
-end
-
 function process_layer(layer, pedal)
     local layer_info  = monolith.get_layer_info(layer)
     local root        = monolith.min_note
@@ -70,7 +60,7 @@ function process_layer(layer, pedal)
         root = 64 -- matches script
         
         for rr=1,monolith.num_pedal_rr do
-            local sample_file = get_file_name(file_prefix, layer, root, root, root, vol_low, vol_high, rr)
+            local sample_file = monolith.get_file_name(file_prefix, layer, root, root, root, vol_low, vol_high, rr)
             copy_samples(layer, note_bar_in, note_duration_bars, reader, sample_file)
             note_bar_in = note_bar_in + 6
         end 
@@ -83,7 +73,7 @@ function process_layer(layer, pedal)
             for rr=1,num_rrs do
                 local note_low = math.max(root - monolith.note_interval + 1, monolith.min_note)
 
-                local sample_file = get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, rr)
+                local sample_file = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, rr)
 
                 copy_samples(note_name, bar_in, note_duration_bars, reader, sample_file)
 

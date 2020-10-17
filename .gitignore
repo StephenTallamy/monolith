@@ -6,5 +6,6 @@
 *.nkc
 *.zip
 *.sfz
+*.dspreset
 Resources/
 samples/
