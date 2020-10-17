@@ -13,7 +13,7 @@ if #arg > 1 then
     flavour = arg[2]
 end
 
-dofile("../common/monolith.lua")
+dofile("common/monolith.lua")
 
 monolith.set_flavour(flavour)
 
