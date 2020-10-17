@@ -1,22 +1,17 @@
+dofile("config.lua")
 
-if #arg < 1 then
-    print('Usage:')
-    print('  lua sfz.lua [filepath] (flavour) (use_split)')
-    return
-end
-
-local file_path = arg[1]
+local file_path = config.filepath
 
 local flavour = 'DEFAULT'
 
-if #arg > 1 then
-    flavour = arg[2]
+if config.flavour then
+    flavour = config.flavour
 end
 
 local using_split = false;
 
-if #arg > 2 then
-    using_split = arg[3] == 'true'
+if config.using_split then
+    using_split = config.using_split
 end
 
 dofile("common/monolith.lua")
@@ -32,26 +27,32 @@ if (monolith.flavour == 'GIMP') then
     tuning_adjustment=30
 end
 
+local file = io.open('instruments/'..config.instrument..".sfz", "w")
+
+function write_line(line)
+    file:write(line..'\n')
+end    
+
 function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, use_rr, vol_low, vol_high, file_prefix)
     local note_name    = monolith.get_note_name(root)
     local note_low     = math.max(root - monolith.note_interval + 1, monolith.min_note)
     
-    print(string.format("// Note %s Group %s RR %d Bar In %d Bar Out %d", note_name, group_name, rr, note_bar_in, note_bar_out)) 
-    print('<region>')
+    write_line(string.format("// Note %s Group %s RR %d Bar In %d Bar Out %d", note_name, group_name, rr, note_bar_in, note_bar_out)) 
+    write_line('<region>')
     if using_split then 
         local sample_file = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, use_rr)
-        print('sample='..sample_file)
+        write_line('sample='..sample_file)
     else
         local sample_start = monolith.get_samples(note_bar_in)
         local sample_end   = monolith.get_samples(note_bar_out)
-        print('offset=' .. sample_start)
-        print('end=' .. sample_end)
+        write_line('offset=' .. sample_start)
+        write_line('end=' .. sample_end)
     end
-    print('hikey=' .. root)
-    print('lokey=' .. note_low)
-    print('pitch_keycenter=' .. root) 
-    print('seq_position=' .. rr)
-    print('')
+    write_line('hikey=' .. root)
+    write_line('lokey=' .. note_low)
+    write_line('pitch_keycenter=' .. root) 
+    write_line('seq_position=' .. rr)
+    write_line('')
 end
 
 function process_layer(layer, pedal)
@@ -66,82 +67,82 @@ function process_layer(layer, pedal)
 
     local file_prefix = string.sub(file_path, 0, -5)
     if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
-        print('<group>')
-        print('group_label=Layer '..layer)
+        write_line('<group>')
+        write_line('group_label=Layer '..layer)
         if using_split == false then
-            print('sample=' .. file_path)
+            write_line('sample=' .. file_path)
         end
-        print('hikey=0')
-        print('lokey=0')
-        print('volume='..pedal_volume)
+        write_line('hikey=0')
+        write_line('lokey=0')
+        write_line('volume='..pedal_volume)
         local note_duration_bars = 2
         if layer == 'PEDAL_UP' then
             note_duration_bars = 4
-            print('start_locc64=0')
-            print('start_hicc64=63')
+            write_line('start_locc64=0')
+            write_line('start_hicc64=63')
         else
-            print('start_locc64=64')
-            print('start_hicc64=127')
+            write_line('start_locc64=64')
+            write_line('start_hicc64=127')
         end
-        print('seq_length='..monolith.num_pedal_rr)
-        print('xfin_locc25=0')
-        print('xfin_hicc25=127')
-        print('')
+        write_line('seq_length='..monolith.num_pedal_rr)
+        write_line('xfin_locc25=0')
+        write_line('xfin_hicc25=127')
+        write_line('')
 
         local note_bar_in = bar_in
 
         for rr=1,monolith.num_pedal_rr do
             local sample_start = monolith.get_samples(note_bar_in)
             local sample_end   = monolith.get_samples(note_bar_in+note_duration_bars)
-            print('<region>')
+            write_line('<region>')
             if using_split then 
                 local sample_file = monolith.get_file_name(file_prefix, layer, 64, 64, 64, vol_low, vol_high, rr)
-                print('sample='..sample_file)
+                write_line('sample='..sample_file)
             else
-                print('offset=' .. sample_start)
-                print('end=' .. sample_end)
+                write_line('offset=' .. sample_start)
+                write_line('end=' .. sample_end)
             end
-            print('seq_position=' .. rr)
-            print('')
+            write_line('seq_position=' .. rr)
+            write_line('')
             
             note_bar_in = note_bar_in + 6
         end 
     else 
-        print('<group>')
+        write_line('<group>')
         local group_label
         if using_split == false then
-            print('sample=' .. file_path)
+            write_line('sample=' .. file_path)
         end
-        print('lovel='..vol_low)
-        print('hivel='..vol_high)
-        print('tune='..tuning_adjustment)
+        write_line('lovel='..vol_low)
+        write_line('hivel='..vol_high)
+        write_line('tune='..tuning_adjustment)
         if layer == 'RT' then
-            print('volume='..rt_volume)
-            print('trigger=release_key')
-            print('seq_length=1')
-            print('xfin_locc24=0')
-            print('xfin_hicc24=127')
-            print('loop_mode=one_shot')
-            print('rt_decay=6')
+            write_line('volume='..rt_volume)
+            write_line('trigger=release_key')
+            write_line('seq_length=1')
+            write_line('xfin_locc24=0')
+            write_line('xfin_hicc24=127')
+            write_line('loop_mode=one_shot')
+            write_line('rt_decay=6')
             group_label = 'Release Triggers'
         else
-            print('volume='..note_volume)
-            print('xfin_locc23=0')
-            print('xfin_hicc23=127')
-            print('seq_length='..monolith.max_rr)
+            write_line('volume='..note_volume)
+            write_line('xfin_locc23=0')
+            write_line('xfin_hicc23=127')
+            write_line('seq_length='..monolith.max_rr)
             group_label = 'Layer '..layer
             if (pedal) then
                 group_label = group_label .. ' (with pedal)'
-                print('locc64=64') 
-                print('hicc64=127')
+                write_line('locc64=64') 
+                write_line('hicc64=127')
             else
                 group_label = group_label .. ' (without pedal)'
-                print('locc64=0') 
-                print('hicc64=63')
+                write_line('locc64=0') 
+                write_line('hicc64=63')
             end
         end
-        print('group_label='..group_label)
-        print('')
+        write_line('group_label='..group_label)
+        write_line('')
 
         for i=0,monolith.num_zones-1 do
             local num_rrs            = monolith.get_num_rr(root, layer)
@@ -165,28 +166,28 @@ function process_layer(layer, pedal)
     end
 end
 
-print('<control>')
-print('label_cc007=Volume')
-print('label_cc0010=Pan')
-print('label_cc023=Notes Volume')
-print('label_cc024=RT Volume')
-print('label_cc025=Pedal Volume')
-print('label_cc064=Sustain Pedal')
-print('set_cc007=127')
-print('set_cc010=64')
-print('set_cc023=127')
-print('set_cc024=127')
-print('set_cc025=127')
-print('')
+write_line('<control>')
+write_line('label_cc007=Volume')
+write_line('label_cc0010=Pan')
+write_line('label_cc023=Notes Volume')
+write_line('label_cc024=RT Volume')
+write_line('label_cc025=Pedal Volume')
+write_line('label_cc064=Sustain Pedal')
+write_line('set_cc007=127')
+write_line('set_cc010=64')
+write_line('set_cc023=127')
+write_line('set_cc024=127')
+write_line('set_cc025=127')
+write_line('')
 
-print('<global>')
-print('ampeg_attack=0.005')
-print('ampeg_decay=0')
-print('ampeg_sustain=100')
-print('ampeg_release=0.6')
-print('ampeg_hold=0')
-print('ampeg_delay=0')
-print('')
+write_line('<global>')
+write_line('ampeg_attack=0.005')
+write_line('ampeg_decay=0')
+write_line('ampeg_sustain=100')
+write_line('ampeg_release=0.6')
+write_line('ampeg_hold=0')
+write_line('ampeg_delay=0')
+write_line('')
 
 process_layer('F', false)
 process_layer('F', true)
@@ -197,3 +198,5 @@ process_layer('P', true)
 process_layer('RT')
 process_layer('PEDAL_UP')
 process_layer('PEDAL_DOWN')
+
+file:close()

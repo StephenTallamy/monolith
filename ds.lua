@@ -1,16 +1,17 @@
+dofile("config.lua")
 
-if #arg < 1 then
-    print('Usage:')
-    print('  lua ds.lua [filepath] (flavour)')
-    return
-end
-
-local file_path = arg[1]
+local file_path = config.filepath
 
 local flavour = 'DEFAULT'
 
-if #arg > 1 then
-    flavour = arg[2]
+if config.flavour then
+    flavour = config.flavour
+end
+
+local using_split = false;
+
+if config.using_split then
+    using_split = config.using_split
 end
 
 dofile("common/monolith.lua")
@@ -26,13 +27,19 @@ if (monolith.flavour == 'GIMP') then
     tuning_adjustment=30
 end
 
+local file = io.open('instruments/'..config.instrument..".dspreset", "w")
+
+function write_line(line)
+    file:write(line..'\n')
+end
+
 function create_zone(group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_path)
     local note_name    = monolith.get_note_name(root)
     local sample_start = monolith.get_samples(note_bar_in)
     local sample_end   = monolith.get_samples(note_bar_out)
     local note_low     = math.max(root - monolith.note_interval + 1, monolith.min_note)
 
-    print('      <sample hiNote="' .. root..'" loNote="' .. note_low..'" rootNote="' .. root..'" start="' .. sample_start..'" end="' .. sample_end..'" path="'..file_path..'" seqPosition="' .. rr..'" loVel="'..vol_low..'" hiVel="'..vol_high..'"/>')
+    write_line('      <sample hiNote="' .. root..'" loNote="' .. note_low..'" rootNote="' .. root..'" start="' .. sample_start..'" end="' .. sample_end..'" path="'..file_path..'" seqPosition="' .. rr..'" loVel="'..vol_low..'" hiVel="'..vol_high..'"/>')
 end
 
 function process_layer(layer, pedal)
@@ -49,7 +56,7 @@ function process_layer(layer, pedal)
     local group_label
     if layer == 'RT' then
         group_label = 'Release Triggers'
-        print('    <group trigger="release" name="'..group_label..'">')
+        write_line('    <group trigger="release" name="'..group_label..'">')
     else
         group_label = 'Layer '..layer
         local locc64
@@ -63,7 +70,7 @@ function process_layer(layer, pedal)
             hicc64=63
             group_label = group_label .. ' (without pedal)'
         end
-        print('    <group name="'..group_label..'" loCC64="'..locc64..'" hiCC64="'..hicc64..'">')
+        write_line('    <group name="'..group_label..'" loCC64="'..locc64..'" hiCC64="'..hicc64..'">')
     end
     
     local file_prefix = string.sub(file_path, 0, -5)
@@ -98,12 +105,12 @@ function process_layer(layer, pedal)
             bar_in = bar_in + ((note_duration_bars + 1) * num_rrs)
         end      
     end
-    print('    </group>')
+    write_line('    </group>')
 end
 
-print('<?xml version="1.0" encoding="UTF-8"?>')
-print('<DecentSampler pluginVersion="1">')
-print('  <groups>')
+write_line('<?xml version="1.0" encoding="UTF-8"?>')
+write_line('<DecentSampler pluginVersion="1">')
+write_line('  <groups>')
 
 process_layer('F', false)
 process_layer('F', true)
@@ -115,5 +122,7 @@ process_layer('RT')
 -- process_layer('PEDAL_UP')
 -- process_layer('PEDAL_DOWN')
 
-print('  </groups>')
-print('</DecentSampler>')
+write_line('  </groups>')
+write_line('</DecentSampler>')
+
+file:close()
