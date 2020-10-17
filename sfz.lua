@@ -8,7 +8,7 @@ if config.flavour then
     flavour = config.flavour
 end
 
-local using_split = false;
+local using_split = false
 
 if config.using_split then
     using_split = config.using_split
