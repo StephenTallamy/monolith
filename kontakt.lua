@@ -6,6 +6,12 @@ if config.flavour then
     flavour = config.flavour
 end
 
+local using_split = false
+
+if config.using_split then
+    using_split = config.using_split
+end
+
 dofile(scriptPath .. filesystem.preferred("/common/monolith.lua"))
 
 monolith.set_flavour(flavour)
@@ -25,7 +31,7 @@ function create_group(groups, i, name)
     return group
 end
 
-function create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high)
+function create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_prefix, layer, use_rr)
     local note_name    = monolith.get_note_name(root)
     local sample_start = monolith.get_samples(note_bar_in)
     local sample_end   = monolith.get_samples(note_bar_out)
@@ -35,15 +41,24 @@ function create_zone(groups, group_name, note_bar_in, note_bar_out, note_duratio
     local zone         = Zone()
     zone.rootKey       = root
     zone.volume        = 0
-    zone.keyRange.low  = math.max(root - monolith.note_interval + 1, monolith.min_note)
+    if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
+        zone.keyRange.low  = root
+    else
+        zone.keyRange.low  = math.max(root - monolith.note_interval + 1, monolith.min_note)
+    end
     zone.keyRange.high = root
-    zone.sampleStart   = sample_start
-    zone.sampleEnd     = sample_end
     zone.velocityRange.low  = vol_low
     zone.velocityRange.high = vol_high
 
     local group = groups[group_name]
-    zone.file = file
+    if using_split then 
+        local sample_file = monolith.get_file_name(file_prefix, layer, root, zone.keyRange.low, zone.keyRange.high, vol_low, vol_high, use_rr)
+        zone.file = sample_file
+    else 
+        zone.sampleStart   = sample_start
+        zone.sampleEnd     = sample_end
+        zone.file = file
+    end
     group.zones:add(zone)
 end
 
@@ -59,6 +74,7 @@ function setup_layer(groups, file, layer, group_prefix)
     local start_bar_pedal    = layer_info['start_bar_pedal']
     local root               = monolith.min_note
     local bar_in             = start_bar
+    local file_prefix        = string.sub(file, 0, -5)
 
     if group_prefix == 'note_with_pedal' then
         bar_in = start_bar_pedal
@@ -79,7 +95,7 @@ function setup_layer(groups, file, layer, group_prefix)
         for rr=1,monolith.num_pedal_rr do
             local group_name = group_prefix..' rr'..rr
             local note_bar_out = note_bar_in + note_duration_bars
-            create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high)
+            create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_prefix, layer, rr)
             note_bar_in = note_bar_in + 6
         end 
     else     
@@ -95,10 +111,11 @@ function setup_layer(groups, file, layer, group_prefix)
                     group_name = group_prefix..' rr'..rr
                 end
                 
-                local note_bar_in  = bar_in + (((rr - 1) % num_rrs) * (note_duration_bars + 1))
+                local use_rr = (rr - 1) % num_rrs
+                local note_bar_in  = bar_in + (use_rr * (note_duration_bars + 1))
                 local note_bar_out = note_bar_in + note_duration_bars
 
-                create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high)
+                create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_prefix, layer, use_rr + 1)
                 
                 if layer == 'RT' then
                     break
@@ -118,12 +135,12 @@ function process_samples()
 
     local groups = {}
     for i=0,monolith.max_rr-1 do
-        local group_name = 'note_with_pedal rr'..(i+1)
+        local group_name = 'note_without_pedal rr'..(i+1)
         create_group(groups, i, group_name)
     end
 
     for i=monolith.max_rr,(2 * monolith.max_rr)-1 do
-        local group_name = 'note_without_pedal rr'..(i-monolith.max_rr+1)
+        local group_name = 'note_with_pedal rr'..(i-monolith.max_rr+1)
         create_group(groups, i, group_name)
     end
 
