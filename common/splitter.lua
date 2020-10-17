@@ -1,16 +1,22 @@
 
 if #arg < 1 then
     print('Usage:')
-    print('  lua splitter.lua [filepath]')
+    print('  lua splitter.lua [filepath] (flavour)')
     return
 end
 
 local file_path = arg[1]
 
+local flavour = 'DEFAULT'
+
+if #arg > 1 then
+    flavour = arg[2]
+end
+
 dofile("wav.lua")
 dofile("../common/monolith.lua")
 
-monolith.set_flavour("GIMP")
+monolith.set_flavour(flavour)
 
 local reader       = wav.create_context(file_path, "r")
 local num_channels = reader.get_channels_number()
@@ -22,6 +28,7 @@ print("Filename:    " .. reader.get_filename())
 print("Channels:    " .. num_channels)
 print("Sample rate: " .. sample_rate)
 print("Bitrate:     " .. bitrate)
+print("Flavour:     " .. flavour)
 print('------------------------------------------------------------------------------')
 
 function copy_samples(note_name, bar_in, note_duration_bars, reader, sample_file)

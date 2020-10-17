@@ -1,7 +1,21 @@
+
+if #arg < 1 then
+    print('Usage:')
+    print('  lua sfz.lua [filepath] (flavour)')
+    return
+end
+
+local file_path = arg[1]
+
+local flavour = 'DEFAULT'
+
+if #arg > 1 then
+    flavour = arg[2]
+end
+
 dofile("../common/monolith.lua")
 
-local file_path     = "./samples/DOES_NOT_EXIST.wav"
-monolith.set_flavour("GIMP")
+monolith.set_flavour(flavour)
 
 local note_volume=20
 local rt_volume=25
