@@ -138,6 +138,24 @@ monolith = {
 
     get_samples = function (bar_num)
         return math.floor((60 / bpm) * (bar_num - 1) * time_signature * sample_rate)
+    end,
+
+    get_file_name  = function (file_prefix, layer, root, note_low, note_high, vol_low, vol_high, rr)
+        local sample_file = file_prefix.."_r"..root..'_lk'..note_low..'_hk'..note_high..'_lv'..vol_low..'_hv'..vol_high.."_rr"..rr
+        if layer == 'RT' then
+            sample_file = sample_file .. "_rt" 
+        elseif layer == 'PEDAL_UP' then
+            sample_file = sample_file .. "_pedal_up" 
+        elseif layer == 'PEDAL_DOWN' then
+            sample_file = sample_file .. "_pedal_down"             
+        elseif pedal == true then
+            sample_file = sample_file .. "_withpedal"
+        else 
+            sample_file = sample_file .. "_nopedal" 
+        end
+        sample_file = sample_file..".wav"
+    
+        return sample_file
     end
 }
 
