@@ -29,17 +29,27 @@ end
 
 local file = io.open('instruments/'..config.instrument..".dspreset", "w")
 
+function write(line)
+    file:write(line)
+end
+
 function write_line(line)
     file:write(line..'\n')
 end
 
-function create_zone(group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_path)
+function create_zone(group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_path, file_prefix, pedal, use_rr)
     local note_name    = monolith.get_note_name(root)
     local sample_start = monolith.get_samples(note_bar_in)
     local sample_end   = monolith.get_samples(note_bar_out)
     local note_low     = math.max(root - monolith.note_interval + 1, monolith.min_note)
 
-    write_line('      <sample hiNote="' .. root..'" loNote="' .. note_low..'" rootNote="' .. root..'" start="' .. sample_start..'" end="' .. sample_end..'" path="'..file_path..'" seqPosition="' .. rr..'" loVel="'..vol_low..'" hiVel="'..vol_high..'"/>')
+    write('      <sample hiNote="' .. root..'" loNote="' .. note_low..'" rootNote="' .. root..'"')
+    if using_split then
+        file_path = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, use_rr, pedal)
+    else
+        write(' start="' .. sample_start..'" end="' .. sample_end..'"')
+    end
+    write_line(' path="'..file_path..'" seqPosition="' .. rr..'" loVel="'..vol_low..'" hiVel="'..vol_high..'"/>')
 end
 
 function process_layer(layer, pedal)
@@ -90,11 +100,12 @@ function process_layer(layer, pedal)
             local num_rrs            = monolith.get_num_rr(root, layer)
             local note_duration_bars = monolith.get_note_duration_bars(root, layer)
             
-            for rr=1,monolith.max_rr do                
-                local note_bar_in  = bar_in + (((rr - 1) % num_rrs) * (note_duration_bars + 1))
+            for rr=1,monolith.max_rr do  
+                local use_rr       = (rr - 1) % num_rrs             
+                local note_bar_in  = bar_in + (use_rr * (note_duration_bars + 1))
                 local note_bar_out = note_bar_in + note_duration_bars
 
-                create_zone(layer, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_path)
+                create_zone(layer, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_path, file_prefix, pedal, use_rr + 1)
                 
                 if layer == 'RT' then
                     break
