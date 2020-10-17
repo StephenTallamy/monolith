@@ -1,24 +1,19 @@
+dofile("config.lua")
 
-if #arg < 1 then
-    print('Usage:')
-    print('  lua splitter.lua [filepath] (flavour)')
-    return
-end
-
-local file_path = arg[1]
+local file_path = config.filepath
 
 local flavour = 'DEFAULT'
 
-if #arg > 1 then
-    flavour = arg[2]
+if config.flavour then
+    flavour = config.flavour
 end
 
-dofile("wav.lua")
-dofile("../common/monolith.lua")
+dofile("common/wav.lua")
+dofile("common/monolith.lua")
 
 monolith.set_flavour(flavour)
 
-local reader       = wav.create_context(file_path, "r")
+local reader       = wav.create_context('instruments/'..file_path, "r")
 local num_channels = reader.get_channels_number()
 local sample_rate  = reader.get_sample_rate()
 local bitrate      = reader.get_bits_per_sample()
@@ -68,7 +63,7 @@ function process_layer(layer, pedal)
         
         for rr=1,monolith.num_pedal_rr do
             local sample_file = monolith.get_file_name(file_prefix, layer, root, root, root, vol_low, vol_high, rr)
-            copy_samples(layer, note_bar_in, note_duration_bars, reader, sample_file)
+            copy_samples(layer, note_bar_in, note_duration_bars, reader, 'instruments/'..sample_file)
             note_bar_in = note_bar_in + 6
         end 
     else 
@@ -82,7 +77,7 @@ function process_layer(layer, pedal)
 
                 local sample_file = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, rr)
 
-                copy_samples(note_name, bar_in, note_duration_bars, reader, sample_file)
+                copy_samples(note_name, bar_in, note_duration_bars, reader, 'instruments/'..sample_file)
 
                 bar_in = bar_in + (note_duration_bars + 1)
             end
