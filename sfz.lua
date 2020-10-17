@@ -33,14 +33,14 @@ function write_line(line)
     file:write(line..'\n')
 end    
 
-function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, use_rr, vol_low, vol_high, file_prefix)
+function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, use_rr, vol_low, vol_high, file_prefix, pedal)
     local note_name    = monolith.get_note_name(root)
     local note_low     = math.max(root - monolith.note_interval + 1, monolith.min_note)
     
     write_line(string.format("// Note %s Group %s RR %d Bar In %d Bar Out %d", note_name, group_name, rr, note_bar_in, note_bar_out)) 
     write_line('<region>')
     if using_split then 
-        local sample_file = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, use_rr)
+        local sample_file = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, use_rr, pedal)
         write_line('sample='..sample_file)
     else
         local sample_start = monolith.get_samples(note_bar_in)
@@ -96,7 +96,7 @@ function process_layer(layer, pedal)
             local sample_end   = monolith.get_samples(note_bar_in+note_duration_bars)
             write_line('<region>')
             if using_split then 
-                local sample_file = monolith.get_file_name(file_prefix, layer, 64, 64, 64, vol_low, vol_high, rr)
+                local sample_file = monolith.get_file_name(file_prefix, layer, 64, 64, 64, vol_low, vol_high, rr, pedal)
                 write_line('sample='..sample_file)
             else
                 write_line('offset=' .. sample_start)
@@ -153,7 +153,7 @@ function process_layer(layer, pedal)
                 local note_bar_in  = bar_in + (use_rr * (note_duration_bars + 1))
                 local note_bar_out = note_bar_in + note_duration_bars
 
-                create_zone(layer, layer, note_bar_in, note_bar_out, note_duration_bars, root, rr, use_rr + 1, vol_low, vol_high, file_prefix)
+                create_zone(layer, layer, note_bar_in, note_bar_out, note_duration_bars, root, rr, use_rr + 1, vol_low, vol_high, file_prefix, pedal)
                 
                 if layer == 'RT' then
                     break

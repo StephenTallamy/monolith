@@ -62,7 +62,7 @@ function process_layer(layer, pedal)
         root = 64 -- matches script
         
         for rr=1,monolith.num_pedal_rr do
-            local sample_file = monolith.get_file_name(file_prefix, layer, root, root, root, vol_low, vol_high, rr)
+            local sample_file = monolith.get_file_name(file_prefix, layer, root, root, root, vol_low, vol_high, rr, pedal)
             copy_samples(layer, note_bar_in, note_duration_bars, reader, 'instruments/'..sample_file)
             note_bar_in = note_bar_in + 6
         end 
@@ -75,7 +75,7 @@ function process_layer(layer, pedal)
             for rr=1,num_rrs do
                 local note_low = math.max(root - monolith.note_interval + 1, monolith.min_note)
 
-                local sample_file = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, rr)
+                local sample_file = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, rr, pedal)
 
                 copy_samples(note_name, bar_in, note_duration_bars, reader, 'instruments/'..sample_file)
 

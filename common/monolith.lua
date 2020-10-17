@@ -140,7 +140,7 @@ monolith = {
         return math.floor((60 / bpm) * (bar_num - 1) * time_signature * sample_rate)
     end,
 
-    get_file_name  = function (file_prefix, layer, root, note_low, note_high, vol_low, vol_high, rr)
+    get_file_name  = function (file_prefix, layer, root, note_low, note_high, vol_low, vol_high, rr, pedal)
         local sample_file = file_prefix.."_r"..root..'_lk'..note_low..'_hk'..note_high..'_lv'..vol_low..'_hv'..vol_high.."_rr"..rr
         if layer == 'RT' then
             sample_file = sample_file .. "_rt" 
