@@ -1,8 +1,16 @@
-dofile(scriptPath .. filesystem.preferred("/common/monolith.lua"))
-monolith.set_flavour('GIMP')
+dofile(scriptPath .. filesystem.preferred("/config.lua"))
 
-local path     = scriptPath .. filesystem.preferred("/samples/")
-local file     = path..'DOES_NOT_EXIST.wav'
+local flavour = 'DEFAULT'
+
+if config.flavour then
+    flavour = config.flavour
+end
+
+dofile(scriptPath .. filesystem.preferred("/common/monolith.lua"))
+
+monolith.set_flavour(flavour)
+
+local file = scriptPath .. filesystem.preferred("/instruments/" .. config.filepath)
 
 function create_group(groups, i, name)
     local group
