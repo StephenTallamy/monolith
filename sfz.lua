@@ -19,7 +19,7 @@ if #arg > 2 then
     using_split = arg[3] == 'true'
 end
 
-dofile("../common/monolith.lua")
+dofile("common/monolith.lua")
 
 monolith.set_flavour(flavour)
 

@@ -1,4 +1,4 @@
-dofile(scriptPath .. filesystem.preferred("/../common/monolith.lua"))
+dofile(scriptPath .. filesystem.preferred("/common/monolith.lua"))
 monolith.set_flavour('GIMP')
 
 local path     = scriptPath .. filesystem.preferred("/samples/")
