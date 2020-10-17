@@ -37,7 +37,7 @@ function write_line(line)
     file:write(line..'\n')
 end
 
-function create_zone(group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_path, file_prefix, pedal, use_rr)
+function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_path, file_prefix, pedal, use_rr)
     local note_name    = monolith.get_note_name(root)
     local sample_start = monolith.get_samples(note_bar_in)
     local sample_end   = monolith.get_samples(note_bar_out)
@@ -105,7 +105,7 @@ function process_layer(layer, pedal)
                 local note_bar_in  = bar_in + (use_rr * (note_duration_bars + 1))
                 local note_bar_out = note_bar_in + note_duration_bars
 
-                create_zone(layer, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_path, file_prefix, pedal, use_rr + 1)
+                create_zone(layer, layer, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_path, file_prefix, pedal, use_rr + 1)
                 
                 if layer == 'RT' then
                     break
