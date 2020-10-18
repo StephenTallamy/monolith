@@ -23,13 +23,9 @@ dofile("common/monolith.lua")
 
 monolith.set_flavour(flavour)
 
-local note_volume=20
-local rt_volume=25
-local pedal_volume=5
 local tuning_adjustment=0
-
-if (monolith.flavour == 'GIMP') then
-    tuning_adjustment=30
+if (config.tuning_adjustment) then
+    tuning_adjustment=config.tuning_adjustment
 end
 
 local file = io.open('instruments/'..config.instrument..".dspreset", "w")
