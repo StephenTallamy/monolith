@@ -16,7 +16,12 @@ dofile(scriptPath .. filesystem.preferred("/common/monolith.lua"))
 
 monolith.set_flavour(flavour)
 
-local file = scriptPath .. filesystem.preferred("/instruments/" .. config.filepath)
+local files
+if (type(config.filepath) == 'table') then
+    files = config.filepath
+else
+    files = {config.filepath}
+end
 
 function create_group(groups, i, name)
     local group
@@ -31,7 +36,7 @@ function create_group(groups, i, name)
     return group
 end
 
-function create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_prefix, layer, use_rr)
+function create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file, file_prefix, layer, use_rr)
     local note_name    = monolith.get_note_name(root)
     local sample_start = monolith.get_samples(note_bar_in)
     local sample_end   = monolith.get_samples(note_bar_out)
@@ -62,7 +67,7 @@ function create_zone(groups, group_name, note_bar_in, note_bar_out, note_duratio
     group.zones:add(zone)
 end
 
-function setup_layer(groups, file, layer, group_prefix)
+function setup_layer(groups, file, layer, pedal, group_prefix)
     local layer_info         = monolith.get_layer_info(layer)
     if layer_info == nil then
         print('Unknown layer '..layer)
@@ -76,7 +81,7 @@ function setup_layer(groups, file, layer, group_prefix)
     local bar_in             = start_bar
     local file_prefix        = string.sub(file, 0, -5)
 
-    if group_prefix == 'note_with_pedal' then
+    if pedal then
         bar_in = start_bar_pedal
     end
 
@@ -95,7 +100,7 @@ function setup_layer(groups, file, layer, group_prefix)
         for rr=1,monolith.num_pedal_rr do
             local group_name = group_prefix..' rr'..rr
             local note_bar_out = note_bar_in + note_duration_bars
-            create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_prefix, layer, rr)
+            create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file, file_prefix, layer, rr)
             note_bar_in = note_bar_in + 6
         end 
     else     
@@ -106,7 +111,7 @@ function setup_layer(groups, file, layer, group_prefix)
             for rr=1,monolith.max_rr do
                 local group_name
                 if layer == 'RT' then
-                    group_name = 'release_triggers'
+                    group_name = group_prefix
                 else 
                     group_name = group_prefix..' rr'..rr
                 end
@@ -115,7 +120,7 @@ function setup_layer(groups, file, layer, group_prefix)
                 local note_bar_in  = bar_in + (use_rr * (note_duration_bars + 1))
                 local note_bar_out = note_bar_in + note_duration_bars
 
-                create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file_prefix, layer, use_rr + 1)
+                create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file, file_prefix, layer, use_rr + 1)
                 
                 if layer == 'RT' then
                     break
@@ -128,51 +133,49 @@ function setup_layer(groups, file, layer, group_prefix)
     end
 end  
 
-function process_samples()
-
-    -- Reset the instrument groups.
-    instrument.groups:reset()
+function process_samples(start_idx, file)    
+    print("Process file ")
+    print(file)
+    
+    local prefix = file:match("([^/]*).wav$")
 
     local groups = {}
     for i=0,monolith.max_rr-1 do
-        local group_name = 'note_without_pedal rr'..(i+1)
-        create_group(groups, i, group_name)
+        local group_name = prefix..' note_without_pedal rr'..(i+1)
+        create_group(groups, start_idx + i, group_name)
     end
 
     for i=monolith.max_rr,(2 * monolith.max_rr)-1 do
-        local group_name = 'note_with_pedal rr'..(i-monolith.max_rr+1)
-        create_group(groups, i, group_name)
+        local group_name = prefix..' note_with_pedal rr'..(i-monolith.max_rr+1)
+        create_group(groups, start_idx + i, group_name)
     end
 
-    create_group(groups, i, 'release_triggers')
+    create_group(groups, i, prefix..' release_triggers')
 
     for i=1,monolith.num_pedal_rr do
-        local group_name = 'pedal_down rr'..i
-        create_group(groups, i, group_name)
+        local group_name = prefix..' pedal_down rr'..i
+        create_group(groups, start_idx + i, group_name)
     end
     for i=1,monolith.num_pedal_rr do
-        local group_name = 'pedal_up rr'..i
-        create_group(groups, i, group_name)
+        local group_name = prefix..' pedal_up rr'..i
+        create_group(groups, start_idx + i, group_name)
     end
     
-    setup_layer(groups, file, 'F' , 'note_without_pedal')
-    setup_layer(groups, file, 'RT')
-    setup_layer(groups, file, 'MF', 'note_without_pedal')
+    setup_layer(groups, file, 'F',  false, prefix..' note_without_pedal')
+    setup_layer(groups, file, 'F',  true,  prefix..' note_with_pedal')
+    setup_layer(groups, file, 'MF', false, prefix..' note_without_pedal')
+    setup_layer(groups, file, 'MF', true,  prefix..' note_with_pedal')
+    setup_layer(groups, file, 'RT', false, prefix..' release_triggers')
+    
     if flavour ~= 'MODULAR' then
-        setup_layer(groups, file, 'P' , 'note_without_pedal')
-    end
-    setup_layer(groups, file, 'F' , 'note_with_pedal')
-    setup_layer(groups, file, 'MF', 'note_with_pedal')
-    if flavour ~= 'MODULAR' then
-        setup_layer(groups, file, 'P' , 'note_with_pedal')
-        setup_layer(groups, file, 'PEDAL_DOWN' , 'pedal_down')
-        setup_layer(groups, file, 'PEDAL_UP' , 'pedal_up') 
+        setup_layer(groups, file, 'P',          false, prefix..' note_without_pedal')
+        setup_layer(groups, file, 'P',          true,  prefix..' note_with_pedal')
+        setup_layer(groups, file, 'PEDAL_DOWN', false, prefix..' pedal_down')
+        setup_layer(groups, file, 'PEDAL_UP',   false, prefix..' pedal_up') 
     end  
 end
 
-print("The samples are located in ")
-print(file)
-print("Using heatmap algorithm "..monolith.flavour)
+print("Using monolith algorithm "..monolith.flavour)
 
 -- Check for valid instrument.
 if not instrument then
@@ -180,5 +183,10 @@ if not instrument then
           "focused on a Kontakt instrument. To solve this, load an instrument in "..
           "Kontakt and select it from the instrument dropdown menu on top.")
 else 
-    process_samples()
+    -- Reset the instrument groups.
+    instrument.groups:reset()
+    for i,sample_file in pairs(files) do       
+        local file = scriptPath .. filesystem.preferred("/instruments/" .. sample_file)
+        process_samples(i - 1, file)
+    end
 end
