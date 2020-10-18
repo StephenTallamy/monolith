@@ -16,6 +16,11 @@ dofile(scriptPath .. filesystem.preferred("/common/monolith.lua"))
 
 monolith.set_flavour(flavour)
 
+local tuning_adjustment=0
+if (config.tuning_adjustment) then
+    tuning_adjustment=config.tuning_adjustment
+end
+
 local files
 if (type(config.filepath) == 'table') then
     files = config.filepath
@@ -49,6 +54,7 @@ function create_zone(groups, group_name, note_bar_in, note_bar_out, note_duratio
     if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
         zone.keyRange.low  = root
     else
+        zone.tune = tuning_adjustment / 100
         zone.keyRange.low  = math.max(root - monolith.note_interval + 1, monolith.min_note)
     end
     zone.keyRange.high = root
