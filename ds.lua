@@ -1,6 +1,11 @@
 dofile("config.lua")
 
-local file_path = config.filepath
+local files
+if (type(config.filepath) == 'table') then
+    files = config.filepath
+else
+    files = {config.filepath}
+end
 
 local flavour = 'DEFAULT'
 
@@ -52,7 +57,7 @@ function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration
     write_line(' path="'..file_path..'" seqPosition="' .. rr..'" loVel="'..vol_low..'" hiVel="'..vol_high..'"/>')
 end
 
-function process_layer(layer, pedal)
+function process_layer(file_path, layer, pedal)
     local layer_info  = monolith.get_layer_info(layer)
     local root        = monolith.min_note
     local bar_in      = layer_info['start_bar']
@@ -61,24 +66,24 @@ function process_layer(layer, pedal)
     if pedal == true then
         bar_in = layer_info['start_bar_pedal']
     end
-    
+    local prefix = file_path:match("([^/]*).wav$")
     
     local group_label
     if layer == 'RT' then
-        group_label = 'Release Triggers'
+        group_label = prefix..' release_triggers'
         write_line('    <group trigger="release" name="'..group_label..'">')
     else
-        group_label = 'Layer '..layer
+        group_label = prefix..' '..layer
         local locc64
         local hicc64
         if (pedal) then
             locc64 = 64
             hicc64 = 127
-            group_label = group_label .. ' (with pedal)'
+            group_label = group_label .. ' notes_with_pedal'
         else
             locc64=0 
             hicc64=63
-            group_label = group_label .. ' (without pedal)'
+            group_label = group_label .. ' notes_without_pedal'
         end
         write_line('    <group name="'..group_label..'" loCC64="'..locc64..'" hiCC64="'..hicc64..'">')
     end
@@ -123,15 +128,17 @@ write_line('<?xml version="1.0" encoding="UTF-8"?>')
 write_line('<DecentSampler pluginVersion="1">')
 write_line('  <groups>')
 
-process_layer('F', false)
-process_layer('F', true)
-process_layer('MF', false)
-process_layer('MF', true)
-process_layer('P', false)
-process_layer('P', true)
-process_layer('RT')
--- process_layer('PEDAL_UP')
--- process_layer('PEDAL_DOWN')
+for i,sample_file in pairs(files) do
+    process_layer(sample_file, 'F', false)
+    process_layer(sample_file, 'F', true)
+    process_layer(sample_file, 'MF', false)
+    process_layer(sample_file, 'MF', true)
+    process_layer(sample_file, 'P', false)
+    process_layer(sample_file, 'P', true)
+    process_layer(sample_file, 'RT')
+    -- process_layer(sample_file, 'PEDAL_UP')
+    -- process_layer(sample_file, 'PEDAL_DOWN')
+end
 
 write_line('  </groups>')
 write_line('</DecentSampler>')

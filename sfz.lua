@@ -1,6 +1,11 @@
 dofile("config.lua")
 
-local file_path = config.filepath
+local files
+if (type(config.filepath) == 'table') then
+    files = config.filepath
+else
+    files = {config.filepath}
+end
 
 local flavour = 'DEFAULT'
 
@@ -55,7 +60,7 @@ function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration
     write_line('')
 end
 
-function process_layer(layer, pedal)
+function process_layer(sample_file, layer, pedal)
     local layer_info  = monolith.get_layer_info(layer)
     local root        = monolith.min_note
     local bar_in      = layer_info['start_bar']
@@ -64,13 +69,14 @@ function process_layer(layer, pedal)
     if pedal == true then
         bar_in = layer_info['start_bar_pedal']
     end
+    local prefix = sample_file:match("([^/]*).wav$")
 
-    local file_prefix = string.sub(file_path, 0, -5)
+    local file_prefix = string.sub(sample_file, 0, -5)
     if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
         write_line('<group>')
-        write_line('group_label=Layer '..layer)
+        write_line('group_label='..prefix..' '..layer:lower())
         if using_split == false then
-            write_line('sample=' .. file_path)
+            write_line('sample=' .. sample_file)
         end
         write_line('hikey=0')
         write_line('lokey=0')
@@ -111,7 +117,7 @@ function process_layer(layer, pedal)
         write_line('<group>')
         local group_label
         if using_split == false then
-            write_line('sample=' .. file_path)
+            write_line('sample=' .. sample_file)
         end
         write_line('lovel='..vol_low)
         write_line('hivel='..vol_high)
@@ -124,24 +130,24 @@ function process_layer(layer, pedal)
             write_line('xfin_hicc24=127')
             write_line('loop_mode=one_shot')
             write_line('rt_decay=6')
-            group_label = 'Release Triggers'
+            group_label = 'release_triggers'
         else
             write_line('volume='..note_volume)
             write_line('xfin_locc23=0')
             write_line('xfin_hicc23=127')
             write_line('seq_length='..monolith.max_rr)
-            group_label = 'Layer '..layer
+            group_label = layer
             if (pedal) then
-                group_label = group_label .. ' (with pedal)'
+                group_label = group_label .. ' note_with_pedal'
                 write_line('locc64=64') 
                 write_line('hicc64=127')
             else
-                group_label = group_label .. ' (without pedal)'
+                group_label = group_label .. ' note_without_pedal'
                 write_line('locc64=0') 
                 write_line('hicc64=63')
             end
         end
-        write_line('group_label='..group_label)
+        write_line('group_label='..prefix..' '..group_label)
         write_line('')
 
         for i=0,monolith.num_zones-1 do
@@ -189,14 +195,15 @@ write_line('ampeg_hold=0')
 write_line('ampeg_delay=0')
 write_line('')
 
-process_layer('F', false)
-process_layer('F', true)
-process_layer('MF', false)
-process_layer('MF', true)
-process_layer('P', false)
-process_layer('P', true)
-process_layer('RT')
-process_layer('PEDAL_UP')
-process_layer('PEDAL_DOWN')
-
+for i,sample_file in pairs(files) do
+    process_layer(sample_file, 'F', false)
+    process_layer(sample_file, 'F', true)
+    process_layer(sample_file, 'MF', false)
+    process_layer(sample_file, 'MF', true)
+    process_layer(sample_file, 'P', false)
+    process_layer(sample_file, 'P', true)
+    process_layer(sample_file, 'RT')
+    process_layer(sample_file, 'PEDAL_UP')
+    process_layer(sample_file, 'PEDAL_DOWN')
+end
 file:close()
