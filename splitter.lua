@@ -102,5 +102,4 @@ for i,sample_file in pairs(files) do
     process_layer(reader, 'RT', false, num_channels, sample_rate, bitrate)
     process_layer(reader, 'PEDAL_UP',  false, num_channels, sample_rate, bitrate)
     process_layer(reader, 'PEDAL_DOWN',false, num_channels, sample_rate, bitrate)
-    reader.finish()
 end
