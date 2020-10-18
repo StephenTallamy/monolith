@@ -1,6 +1,11 @@
 dofile("config.lua")
 
-local file_path = config.filepath
+local files
+if (type(config.filepath) == 'table') then
+    files = config.filepath
+else
+    files = {config.filepath}
+end
 
 local flavour = 'DEFAULT'
 
@@ -13,20 +18,7 @@ dofile("common/monolith.lua")
 
 monolith.set_flavour(flavour)
 
-local reader       = wav.create_context('instruments/'..file_path, "r")
-local num_channels = reader.get_channels_number()
-local sample_rate  = reader.get_sample_rate()
-local bitrate      = reader.get_bits_per_sample()
-
-print('------------------------------------------------------------------------------')
-print("Filename:    " .. reader.get_filename())
-print("Channels:    " .. num_channels)
-print("Sample rate: " .. sample_rate)
-print("Bitrate:     " .. bitrate)
-print("Flavour:     " .. flavour)
-print('------------------------------------------------------------------------------')
-
-function copy_samples(note_name, bar_in, note_duration_bars, reader, sample_file)
+function copy_samples(note_name, bar_in, note_duration_bars, reader, sample_file, num_channels, sample_rate, bitrate)
     local samples_in  = monolith.get_samples(bar_in)
     local samples_out = monolith.get_samples(bar_in + note_duration_bars)
 
@@ -42,7 +34,7 @@ function copy_samples(note_name, bar_in, note_duration_bars, reader, sample_file
     writer.finish()
 end
 
-function process_layer(layer, pedal)
+function process_layer(reader, layer, pedal, num_channels, sample_rate, bitrate)
     local layer_info  = monolith.get_layer_info(layer)
     local root        = monolith.min_note
     local bar_in      = layer_info['start_bar']
@@ -52,7 +44,7 @@ function process_layer(layer, pedal)
         bar_in = layer_info['start_bar_pedal']
     end
 
-    local file_prefix = string.sub(file_path, 0, -5)
+    local file_prefix = string.sub(reader.get_filename(), 0, -5)
     if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
         local note_duration_bars = 2
         if layer == 'PEDAL_UP' then
@@ -63,7 +55,7 @@ function process_layer(layer, pedal)
         
         for rr=1,monolith.num_pedal_rr do
             local sample_file = monolith.get_file_name(file_prefix, layer, root, root, root, vol_low, vol_high, rr, pedal)
-            copy_samples(layer, note_bar_in, note_duration_bars, reader, 'instruments/'..sample_file)
+            copy_samples(layer, note_bar_in, note_duration_bars, reader, sample_file, num_channels, sample_rate, bitrate)
             note_bar_in = note_bar_in + 6
         end 
     else 
@@ -77,7 +69,7 @@ function process_layer(layer, pedal)
 
                 local sample_file = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, rr, pedal)
 
-                copy_samples(note_name, bar_in, note_duration_bars, reader, 'instruments/'..sample_file)
+                copy_samples(note_name, bar_in, note_duration_bars, reader, sample_file, num_channels, sample_rate, bitrate)
 
                 bar_in = bar_in + (note_duration_bars + 1)
             end
@@ -87,12 +79,28 @@ function process_layer(layer, pedal)
     end
 end
 
-process_layer('F', false)
-process_layer('F', true)
-process_layer('MF', false)
-process_layer('MF', true)
-process_layer('P', false)
-process_layer('P', true)
-process_layer('RT')
-process_layer('PEDAL_UP')
-process_layer('PEDAL_DOWN')
+for i,sample_file in pairs(files) do
+    local reader       = wav.create_context('instruments/'..sample_file, 'r')
+    local num_channels = reader.get_channels_number()
+    local sample_rate  = reader.get_sample_rate()
+    local bitrate      = reader.get_bits_per_sample()
+
+    print('------------------------------------------------------------------------------')
+    print("Filename:    " .. reader.get_filename())
+    print("Channels:    " .. num_channels)
+    print("Sample rate: " .. sample_rate)
+    print("Bitrate:     " .. bitrate)
+    print("Flavour:     " .. flavour)
+    print('------------------------------------------------------------------------------')
+
+    process_layer(reader, 'F',  false, num_channels, sample_rate, bitrate)
+    process_layer(reader, 'F',  true, num_channels, sample_rate, bitrate)
+    process_layer(reader, 'MF', false, num_channels, sample_rate, bitrate)
+    process_layer(reader, 'MF', true, num_channels, sample_rate, bitrate)
+    process_layer(reader, 'P',  false, num_channels, sample_rate, bitrate)
+    process_layer(reader, 'P',  true, num_channels, sample_rate, bitrate)
+    process_layer(reader, 'RT', false, num_channels, sample_rate, bitrate)
+    process_layer(reader, 'PEDAL_UP',  false, num_channels, sample_rate, bitrate)
+    process_layer(reader, 'PEDAL_DOWN',false, num_channels, sample_rate, bitrate)
+    reader.finish()
+end
