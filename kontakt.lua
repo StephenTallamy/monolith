@@ -41,7 +41,7 @@ function create_group(groups, i, name)
     return group
 end
 
-function create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file, file_prefix, layer, use_rr)
+function create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file, file_prefix, layer, use_rr, pedal)
     local note_name    = monolith.get_note_name(root)
     local sample_start = monolith.get_samples(note_bar_in)
     local sample_end   = monolith.get_samples(note_bar_out)
@@ -63,7 +63,7 @@ function create_zone(groups, group_name, note_bar_in, note_bar_out, note_duratio
 
     local group = groups[group_name]
     if using_split then 
-        local sample_file = monolith.get_file_name(file_prefix, layer, root, zone.keyRange.low, zone.keyRange.high, vol_low, vol_high, use_rr)
+        local sample_file = monolith.get_file_name(file_prefix, layer, root, zone.keyRange.low, zone.keyRange.high, vol_low, vol_high, use_rr, pedal)
         zone.file = sample_file
     else 
         zone.sampleStart   = sample_start
@@ -106,7 +106,7 @@ function setup_layer(groups, file, layer, pedal, group_prefix)
         for rr=1,monolith.num_pedal_rr do
             local group_name = group_prefix..' rr'..rr
             local note_bar_out = note_bar_in + note_duration_bars
-            create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file, file_prefix, layer, rr)
+            create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file, file_prefix, layer, rr, pedal)
             note_bar_in = note_bar_in + 6
         end 
     else     
@@ -126,7 +126,7 @@ function setup_layer(groups, file, layer, pedal, group_prefix)
                 local note_bar_in  = bar_in + (use_rr * (note_duration_bars + 1))
                 local note_bar_out = note_bar_in + note_duration_bars
 
-                create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file, file_prefix, layer, use_rr + 1)
+                create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file, file_prefix, layer, use_rr + 1, pedal)
                 
                 if layer == 'RT' then
                     break
