@@ -123,20 +123,41 @@ end
 write_line('<?xml version="1.0" encoding="UTF-8"?>')
 write_line('<DecentSampler pluginVersion="1">')
 write_line('  <groups>')
-
+local groups = { notes={}, rt={} }
 for i,sample_file in pairs(files) do
     process_layer(sample_file, 'F', false)
+    table.insert(groups.notes, (i - 1) * 7 + 0)
     process_layer(sample_file, 'F', true)
+    table.insert(groups.notes, (i - 1) * 7 + 1)
     process_layer(sample_file, 'MF', false)
+    table.insert(groups.notes, (i - 1) * 7 + 2)
     process_layer(sample_file, 'MF', true)
+    table.insert(groups.notes, (i - 1) * 7 + 3)
     process_layer(sample_file, 'P', false)
+    table.insert(groups.notes, (i - 1) * 7 + 4)
     process_layer(sample_file, 'P', true)
+    table.insert(groups.notes, (i - 1) * 7 + 5)
     process_layer(sample_file, 'RT')
+    table.insert(groups.rt,    (i - 1) * 7 + 6)
     -- process_layer(sample_file, 'PEDAL_UP')
     -- process_layer(sample_file, 'PEDAL_DOWN')
-end
 
+end
 write_line('  </groups>')
+write_line('  <ui bgImage="Resources/pictures/background.png" width="812" height="375" layoutMode="relative" bgMode="top_left">')
+write_line('    <tab name="main">')
+write_line('      <labeled-knob x="300" y="90" label="NOTES" type="float" minValue="0" maxValue="1" textColor="FFFFFFFF" value="0.3">')
+for i,group in pairs(groups.notes) do
+    write_line('        <binding type="amp" level="group" position="'..group..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0"  />')
+end
+write_line('      </labeled-knob>')
+write_line('      <labeled-knob x="420" y="90" label="RT" type="float" minValue="0" maxValue="1" textColor="FFFFFFFF" value="0.3">')
+for i,group in pairs(groups.rt) do
+    write_line('        <binding type="amp" level="group" position="'..group..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0"  />')
+end
+write_line('      </labeled-knob>')
+write_line('    </tab>')
+write_line('  </ui>')
 write_line('</DecentSampler>')
 
 file:close()
