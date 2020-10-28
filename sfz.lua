@@ -81,9 +81,8 @@ function process_layer(sample_file, layer, pedal)
         write_line('hikey=0')
         write_line('lokey=0')
         write_line('volume='..pedal_volume)
-        local note_duration_bars = 2
+        local note_duration_bars = monolith.get_note_duration_bars(root, layer)
         if layer == 'PEDAL_UP' then
-            note_duration_bars = 4
             write_line('start_locc64=0')
             write_line('start_hicc64=63')
         else
@@ -111,7 +110,7 @@ function process_layer(sample_file, layer, pedal)
             write_line('seq_position=' .. rr)
             write_line('')
             
-            note_bar_in = note_bar_in + 6
+            note_bar_in = note_bar_in + monolith.get_bars_between_pedals()
         end 
     else 
         write_line('<group>')

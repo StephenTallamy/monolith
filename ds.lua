@@ -94,7 +94,7 @@ function process_layer(file_path, layer, pedal)
             
             -- TODO
             
-            note_bar_in = note_bar_in + 6
+            note_bar_in = note_bar_in + monolith.get_bars_between_pedals()
         end 
     else
         for i=0,monolith.num_zones-1 do

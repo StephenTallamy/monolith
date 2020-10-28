@@ -6,36 +6,36 @@ local layer_map = {
     F = {
         vol_low            = 120,
         vol_high           = 127,
-        start_bar          = 5,
-        start_bar_pedal    = 1357
+        start_bar          = 1326,
+        start_bar_pedal    = 5
     }, 
     RT = {
         vol_low            = 1, 
         vol_high           = 127,
-        start_bar          = 218,
-        start_bar_pedal    = 1563
+        start_bar          = 1539,
+        start_bar_pedal    = 218
     },
     MF = {
         vol_low            = 96, 
         vol_high           = 119,
-        start_bar          = 312,
-        start_bar_pedal    = 1657   
+        start_bar          = 1633,
+        start_bar_pedal    = 312   
     }, 
     P = {
         vol_low            = 1, 
         vol_high           = 95,
-        start_bar          = 781,
-        start_bar_pedal    = 2126 
+        start_bar          = 2102,
+        start_bar_pedal    = 781 
     },
     PEDAL_DOWN = {
         vol_low            = 1, 
         vol_high           = 127,
-        start_bar          = 2530
+        start_bar          = 1250
     },
     PEDAL_UP = {
         vol_low            = 1, 
         vol_high           = 127,
-        start_bar          = 2532
+        start_bar          = 1253
     }
 }
 
@@ -60,6 +60,8 @@ monolith = {
             layer_map['MF']['start_bar_pedal'] = 1537
             layer_map['P']['start_bar']        = 771 
             layer_map['P']['start_bar_pedal']  = 2032
+            layer_map['PEDAL_DOWN']['start_bar'] = 2530
+            layer_map['PEDAL_UP']['start_bar']   = 2532
             monolith.max_rr = 4
             monolith.num_pedal_rr = 4 -- need to cross-check this
         end
@@ -107,9 +109,15 @@ monolith = {
 
     get_note_duration_bars = function (note_number, layer)
         if     layer   == 'RT'   then return 2
+        elseif monolith.flavour == 'GIMP' and layer == 'PEDAL_UP' then return 4
+        elseif layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN' then return 2  
         elseif monolith.flavour == 'GIMP' or monolith.flavour == 'MODULAR' then return monolith.get_note_duration_bars_v1(note_number, layer)
         else   return monolith.get_note_duration_bars_v2(note_number, layer)
         end
+    end,
+
+    get_bars_between_pedals = function()
+        return 6
     end,
 
     get_num_rr_v1 = function (note_number, layer)
