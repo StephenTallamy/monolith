@@ -96,10 +96,7 @@ function setup_layer(groups, file, layer, pedal, group_prefix)
     print('------------------------------------------------------------------------------')
 
     if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
-        local note_duration_bars = 2
-        if layer == 'PEDAL_UP' then
-            note_duration_bars = 4
-        end
+        local note_duration_bars = monolith.get_note_duration_bars(root, layer)
         local note_bar_in = bar_in
         root = 64 -- matches script
         
@@ -107,7 +104,7 @@ function setup_layer(groups, file, layer, pedal, group_prefix)
             local group_name = group_prefix..' rr'..rr
             local note_bar_out = note_bar_in + note_duration_bars
             create_zone(groups, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, vol_low, vol_high, file, file_prefix, layer, rr, pedal)
-            note_bar_in = note_bar_in + 6
+            note_bar_in = note_bar_in + monolith.get_bars_between_pedals()
         end 
     else     
         for i=0,monolith.num_zones-1 do
