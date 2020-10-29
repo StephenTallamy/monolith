@@ -7,12 +7,6 @@ else
     files = {config.filepath}
 end
 
-local flavour = 'DEFAULT'
-
-if config.flavour then
-    flavour = config.flavour
-end
-
 local using_split = false
 
 if config.using_split then
@@ -21,7 +15,7 @@ end
 
 dofile("common/monolith.lua")
 
-monolith.set_flavour(flavour)
+monolith.configure(config)
 
 local note_volume=15
 local rt_volume=15

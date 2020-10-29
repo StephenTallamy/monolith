@@ -1,11 +1,5 @@
 dofile(scriptPath .. filesystem.preferred("/config.lua"))
 
-local flavour = 'DEFAULT'
-
-if config.flavour then
-    flavour = config.flavour
-end
-
 local using_split = false
 
 if config.using_split then
@@ -14,7 +8,7 @@ end
 
 dofile(scriptPath .. filesystem.preferred("/common/monolith.lua"))
 
-monolith.set_flavour(flavour)
+monolith.configure(config)
 
 local tuning_adjustment=0
 if (config.tuning_adjustment) then
@@ -164,18 +158,17 @@ function process_samples(start_idx, file)
         create_group(groups, start_idx + i, group_name)
     end
     
-    setup_layer(groups, file, 'F',  false, prefix..' note_without_pedal')
     setup_layer(groups, file, 'F',  true,  prefix..' note_with_pedal')
-    setup_layer(groups, file, 'MF', false, prefix..' note_without_pedal')
     setup_layer(groups, file, 'MF', true,  prefix..' note_with_pedal')
+    setup_layer(groups, file, 'P',  true,  prefix..' note_with_pedal')
     setup_layer(groups, file, 'RT', false, prefix..' release_triggers')
+
+    setup_layer(groups, file, 'F',  false, prefix..' note_without_pedal')
+    setup_layer(groups, file, 'MF', false, prefix..' note_without_pedal')
+    setup_layer(groups, file, 'P',  false, prefix..' note_without_pedal')
     
-    if flavour ~= 'MODULAR' then
-        setup_layer(groups, file, 'P',          false, prefix..' note_without_pedal')
-        setup_layer(groups, file, 'P',          true,  prefix..' note_with_pedal')
-        setup_layer(groups, file, 'PEDAL_DOWN', false, prefix..' pedal_down')
-        setup_layer(groups, file, 'PEDAL_UP',   false, prefix..' pedal_up') 
-    end  
+    setup_layer(groups, file, 'PEDAL_DOWN', false, prefix..' pedal_down')
+    setup_layer(groups, file, 'PEDAL_UP',   false, prefix..' pedal_up') 
 end
 
 print("Using monolith algorithm "..monolith.flavour)

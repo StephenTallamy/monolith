@@ -8,5 +8,6 @@
 *.sfz
 *.dspreset
 *.dslibrary
+*.psd
 Resources/
 samples/

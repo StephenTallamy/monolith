@@ -1,7 +1,3 @@
-local sample_rate     = 48000
-local time_signature  = 4
-local bpm             = 115.2
-
 local layer_map = { 
     F = {
         vol_low            = 120,
@@ -48,11 +44,20 @@ monolith = {
     note_interval   = 3,
     min_note        = 21,
     flavour         = 'DEFAULT',
+    sample_rate     = 48000,
+    time_signature  = 4,
+    bpm             = 115.2,
 
-    set_flavour = function(flavour)
-        monolith.flavour = flavour
+    configure = function(config)       
+        if config.flavour then
+            monolith.flavour = config.flavour
+        end
 
-        if flavour == 'GIMP' then
+        if config.bpm then
+            monolith.bpm = config.bpm
+        end
+
+        if monolith.flavour == 'GIMP' then
             layer_map['F']['start_bar_pedal']  = 1266
             layer_map['RT']['start_bar']       = 186
             layer_map['RT']['start_bar_pedal'] = 1446
@@ -66,7 +71,7 @@ monolith = {
             monolith.num_pedal_rr = 4 -- need to cross-check this
         end
         
-        if flavour == 'MODULAR' then
+        if monolith.flavour == 'MODULAR' then
             -- no P layer in MODULAR and no notes without pedal
             layer_map['F']['vol_low']          = 97 
             layer_map['F']['start_bar_pedal']  = 5
@@ -145,7 +150,7 @@ monolith = {
     end,
 
     get_samples = function (bar_num)
-        return math.floor((60 / bpm) * (bar_num - 1) * time_signature * sample_rate)
+        return math.floor((60 / monolith.bpm) * (bar_num - 1) * monolith.time_signature * monolith.sample_rate)
     end,
 
     get_file_name  = function (file_prefix, layer, root, note_low, note_high, vol_low, vol_high, rr, pedal)
