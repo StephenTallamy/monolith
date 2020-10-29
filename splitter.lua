@@ -7,16 +7,10 @@ else
     files = {config.filepath}
 end
 
-local flavour = 'DEFAULT'
-
-if config.flavour then
-    flavour = config.flavour
-end
-
 dofile("common/wav.lua")
 dofile("common/monolith.lua")
 
-monolith.set_flavour(flavour)
+monolith.configure(config)
 
 function copy_samples(note_name, bar_in, note_duration_bars, reader, sample_file, num_channels, sample_rate, bitrate)
     local samples_in  = monolith.get_samples(bar_in)
@@ -90,7 +84,7 @@ for i,sample_file in pairs(files) do
     print("Channels:    " .. num_channels)
     print("Sample rate: " .. sample_rate)
     print("Bitrate:     " .. bitrate)
-    print("Flavour:     " .. flavour)
+    print("Flavour:     " .. monolith.flavour)
     print('------------------------------------------------------------------------------')
 
     process_layer(reader, 'F',  false, num_channels, sample_rate, bitrate)
