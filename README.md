@@ -41,6 +41,8 @@ After the automation has run you will need to perform the following manual steps
 14. You may wish to use the modulation shaper option for Velocity to create a table that
     matches the velocity feel you wish for your instrument. A reasonable starting place
     is the Factory Default - Keytrack Tables - AR Table.
+15. In the Voices section increase the maximum number of voices from the default 32 to a much
+    larger number (more than 200), particularly if you are using multiple mic positions.
 
 ### Scripts
 
