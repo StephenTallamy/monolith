@@ -2,7 +2,7 @@
 
 Project to help automate the generation of virutal instruments based on the
 "monolith" concept by Christian Henson. The project currently supports generation of 
-instruments in Kontakt, SFZ and DecentSampler
+instruments in [Kontakt](#kontakt), [SFZ](#sfz) and [DecentSampler](#decentsampler).
 
 ## Kontakt
 
@@ -107,6 +107,22 @@ For a multi-mic standard monolith, the following settings are a good starting po
     declare %note_groups[18]            := (0,1,2,3,4,5,                17,18,19,20,21,22,             34,35,36,37,38,39)
     declare %release_trigger_groups[3]  := (6,                          23,                            40)
     declare %pedal_groups[30]           := (7,8,9,10,11,12,13,14,15,16, 24,25,26,27,28,29,30,31,32,33, 41,42,43,44,45,46,47,48,49,50)
+```
+
+## SFZ
+
+To generate a SFZ file, [https://www.lua.org/start.html](install lua) and then simply run
+
+```
+lua sfz.lua
+```
+
+## DecentSampler
+
+To generate a DecentSampler dspreset file, [https://www.lua.org/start.html](install lua) and then simply run
+
+```
+lua ds.lua
 ```
 
 ## Development
