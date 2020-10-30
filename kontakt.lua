@@ -86,7 +86,7 @@ function setup_layer(groups, file, layer, pedal, group_prefix)
     end
 
     print('------------------------------------------------------------------------------')
-    print(string.format("Layer %s Bar In %d Vol Low %d Vol High %d", layer, bar_in, vol_low, vol_high))
+    print(string.format("Layer %s Group Prefix %s Bar In %d Vol Low %d Vol High %d", layer, group_prefix, bar_in, vol_low, vol_high))
     print('------------------------------------------------------------------------------')
 
     if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
