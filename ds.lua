@@ -1,12 +1,5 @@
 dofile("config.lua")
 
-local files
-if (type(config.filepath) == 'table') then
-    files = config.filepath
-else
-    files = {config.filepath}
-end
-
 local using_split = false
 
 if config.using_split then
@@ -47,7 +40,7 @@ function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration
     write_line(' path="'..file_path..'" seqPosition="' .. rr..'" loVel="'..vol_low..'" hiVel="'..vol_high..'"/>')
 end
 
-function process_layer(file_path, layer, pedal)
+function process_layer(file_path, prefix, layer, pedal)
     local layer_info  = monolith.get_layer_info(layer)
     local root        = monolith.min_note
     local bar_in      = layer_info['start_bar']
@@ -56,7 +49,6 @@ function process_layer(file_path, layer, pedal)
     if pedal == true then
         bar_in = layer_info['start_bar_pedal']
     end
-    local prefix = file_path:match("([^/]*).wav$")
     
     local group_label
     if layer == 'RT' then
@@ -118,20 +110,21 @@ write_line('<?xml version="1.0" encoding="UTF-8"?>')
 write_line('<DecentSampler pluginVersion="1">')
 write_line('  <groups>')
 local groups = { notes={}, rt={} }
-for i,sample_file in pairs(files) do
-    process_layer(sample_file, 'F', false)
+for i,sample_file in pairs(monolith.files) do
+    local prefix = monolith.prefix[i]
+    process_layer(sample_file, prefix, 'F', false)
     table.insert(groups.notes, (i - 1) * 7 + 0)
-    process_layer(sample_file, 'F', true)
+    process_layer(sample_file, prefix, 'F', true)
     table.insert(groups.notes, (i - 1) * 7 + 1)
-    process_layer(sample_file, 'MF', false)
+    process_layer(sample_file, prefix, 'MF', false)
     table.insert(groups.notes, (i - 1) * 7 + 2)
-    process_layer(sample_file, 'MF', true)
+    process_layer(sample_file, prefix, 'MF', true)
     table.insert(groups.notes, (i - 1) * 7 + 3)
-    process_layer(sample_file, 'P', false)
+    process_layer(sample_file, prefix, 'P', false)
     table.insert(groups.notes, (i - 1) * 7 + 4)
-    process_layer(sample_file, 'P', true)
+    process_layer(sample_file, prefix, 'P', true)
     table.insert(groups.notes, (i - 1) * 7 + 5)
-    process_layer(sample_file, 'RT')
+    process_layer(sample_file, prefix, 'RT')
     table.insert(groups.rt,    (i - 1) * 7 + 6)
     -- process_layer(sample_file, 'PEDAL_UP')
     -- process_layer(sample_file, 'PEDAL_DOWN')

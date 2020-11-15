@@ -1,12 +1,5 @@
 dofile("config.lua")
 
-local files
-if (type(config.filepath) == 'table') then
-    files = config.filepath
-else
-    files = {config.filepath}
-end
-
 local using_split = false
 
 if config.using_split then
@@ -54,7 +47,7 @@ function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration
     write_line('')
 end
 
-function process_layer(sample_file, layer, pedal)
+function process_layer(sample_file, prefix, layer, pedal)
     local layer_info  = monolith.get_layer_info(layer)
     local root        = monolith.min_note
     local bar_in      = layer_info['start_bar']
@@ -63,7 +56,6 @@ function process_layer(sample_file, layer, pedal)
     if pedal == true then
         bar_in = layer_info['start_bar_pedal']
     end
-    local prefix = sample_file:match("([^/]*).wav$")
 
     local file_prefix = string.sub(sample_file, 0, -5)
     if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
@@ -188,15 +180,16 @@ write_line('ampeg_hold=0')
 write_line('ampeg_delay=0')
 write_line('')
 
-for i,sample_file in pairs(files) do
-    process_layer(sample_file, 'F', false)
-    process_layer(sample_file, 'F', true)
-    process_layer(sample_file, 'MF', false)
-    process_layer(sample_file, 'MF', true)
-    process_layer(sample_file, 'P', false)
-    process_layer(sample_file, 'P', true)
-    process_layer(sample_file, 'RT')
-    process_layer(sample_file, 'PEDAL_UP')
-    process_layer(sample_file, 'PEDAL_DOWN')
+for i,sample_file in pairs(monolith.files) do
+    local prefix = monolith.prefix[i]
+    process_layer(sample_file, prefix, 'F', false)
+    process_layer(sample_file, prefix, 'F', true)
+    process_layer(sample_file, prefix, 'MF', false)
+    process_layer(sample_file, prefix, 'MF', true)
+    process_layer(sample_file, prefix, 'P', false)
+    process_layer(sample_file, prefix, 'P', true)
+    process_layer(sample_file, prefix, 'RT')
+    process_layer(sample_file, prefix, 'PEDAL_UP')
+    process_layer(sample_file, prefix, 'PEDAL_DOWN')
 end
 file:close()

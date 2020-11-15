@@ -15,13 +15,6 @@ if (config.tuning_adjustment) then
     tuning_adjustment=config.tuning_adjustment
 end
 
-local files
-if (type(config.filepath) == 'table') then
-    files = config.filepath
-else
-    files = {config.filepath}
-end
-
 function create_group(groups, i, name)
     local group
     if i == 0 then
@@ -130,11 +123,9 @@ function setup_layer(groups, file, layer, pedal, group_prefix)
     end
 end  
 
-function process_samples(start_idx, file)    
+function process_samples(start_idx, file, prefix)    
     print("Process file ")
     print(file)
-    
-    local prefix = file:match("([^/]*).wav$")
 
     local groups = {}
     for i=0,monolith.max_rr-1 do
@@ -181,8 +172,9 @@ if not instrument then
 else 
     -- Reset the instrument groups.
     instrument.groups:reset()
-    for i,sample_file in pairs(files) do       
+    for i,sample_file in pairs(monolith.files) do
+        local prefix = monolith.prefix[i]     
         local file = scriptPath .. filesystem.preferred("/instruments/" .. sample_file)
-        process_samples(i - 1, file)
+        process_samples(i - 1, file, prefix)
     end
 end
