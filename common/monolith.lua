@@ -47,10 +47,31 @@ monolith = {
     sample_rate     = 48000,
     time_signature  = 4,
     bpm             = 115.2,
+    files           = {},
+    prefix          = {},
 
     configure = function(config)       
         if config.flavour then
             monolith.flavour = config.flavour
+        end
+
+        if type(config.filepath) == 'table' then
+            monolith.files = config.filepath
+        else
+            monolith.files = {config.filepath}
+        end
+
+        if config.prefix then
+            if type(config.prefix) == 'table' then
+                monolith.prefix = config.prefix
+            else
+                monolith.prefix = {config.prefix}
+            end
+        else
+            for i,sample_file in pairs(monolith.files) do
+                local prefix = sample_file:match("([^/]*).wav$")
+                table.insert(monolith.prefix, prefix)
+            end
         end
 
         if config.bpm then
