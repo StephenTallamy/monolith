@@ -91,6 +91,13 @@ monolith = {
             monolith.max_rr = 4
             monolith.num_pedal_rr = 4 -- need to cross-check this
         end
+
+        if monolith.flavour == 'SAME_PEDALS' then
+            layer_map['F']['start_bar']  = layer_map['F']['start_bar_pedal']
+            layer_map['RT']['start_bar'] = layer_map['RT']['start_bar_pedal']
+            layer_map['MF']['start_bar'] = layer_map['MF']['start_bar_pedal']
+            layer_map['P']['start_bar']  = layer_map['P']['start_bar_pedal']
+        end
         
         if monolith.flavour == 'MODULAR' then
             -- no P layer in MODULAR and no notes without pedal
