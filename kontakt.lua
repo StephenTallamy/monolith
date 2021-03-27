@@ -170,6 +170,8 @@ if not instrument then
           "focused on a Kontakt instrument. To solve this, load an instrument in "..
           "Kontakt and select it from the instrument dropdown menu on top.")
 else 
+    -- Set the name
+    instrument.name = config.instrument
     -- Reset the instrument groups.
     instrument.groups:reset()
     for i,sample_file in pairs(monolith.files) do
