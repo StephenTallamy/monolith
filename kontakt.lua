@@ -179,4 +179,46 @@ else
         local file = scriptPath .. filesystem.preferred("/instruments/" .. sample_file)
         process_samples(i - 1, file, prefix)
     end
+
+    note_groups = {}
+    release_trigger_groups = {}
+    pedal_groups = {}
+    note_without_pedal_groups = {}
+    note_with_pedal_groups = {}
+    pedal_down_groups = {}
+    pedal_up_groups = {}
+    for n=0,#instrument.groups-1 do
+        local group_name = instrument.groups[n].name
+        if string.match(group_name, "note_") then
+            table.insert(note_groups, n)
+            if (string.match(group_name, "without")) then
+                table.insert(note_without_pedal_groups, n)
+            else
+                table.insert(note_with_pedal_groups, n)
+            end
+        elseif string.match(group_name, "pedal_") then
+            table.insert(pedal_groups, n)
+            if (string.match(group_name, "down")) then
+                table.insert(pedal_down_groups, n)
+            else
+                table.insert(pedal_up_groups, n)
+            end
+        elseif string.match(group_name, "release_triggers") then
+            table.insert(release_trigger_groups, n)    
+        end
+    end
+    num_mics = #monolith.files
+
+    if num_mics > 1 then
+        dofile(scriptPath .. filesystem.preferred("/kontakt/Pianobook Piano Template - UI (with Mic Levels).lua"))
+        dofile(scriptPath .. filesystem.preferred("/kontakt/Pianobook Piano Template - Voice Triggering (with Mic Levels).lua"))
+    else
+        dofile(scriptPath .. filesystem.preferred("/kontakt/Pianobook Piano Template - UI.lua"))
+        dofile(scriptPath .. filesystem.preferred("/kontakt/Pianobook Piano Template - Voice Triggering.lua"))
+    end
+
+    instrument.scripts[0].name = "Pianobook UI"
+    instrument.scripts[0].sourceCode = ui_script
+    instrument.scripts[1].name = "Note Triggering"
+    instrument.scripts[1].sourceCode = trigger_script
 end
