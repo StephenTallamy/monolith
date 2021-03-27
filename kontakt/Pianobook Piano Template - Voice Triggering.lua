@@ -48,7 +48,7 @@ on init
     { If you set this to 0, the round robins will be sequential, otherwise 
     they will be random (but with code to prevent the same sample triggering twice 
     in a row).} 
-    declare $randomize_round_robins := 1
+    declare $randomize_round_robins := 0
 
     SET_CONDITION(NO_SYS_SCRIPT_PEDAL)
     SET_CONDITION(NO_SYS_SCRIPT_RLS_TRIG)

@@ -49,65 +49,12 @@ After the automation has run you will need to perform the following manual steps
 
 ### Scripts
 
-The generated Kontakt files are compatible with Dave Hilowitz's piano template scripts:
+The generated Kontakt files will automatically add the approriate scripts from 
+Dave Hilowitz's piano template scripts:
 
 https://github.com/dhilowitz/kontakt-piano-template
 
-Depending on whether you have a single mic or multiple mics, pick the appropriate KSP files for
-Voice Triggering and UI and apply each into their own Script tab in Kontakt. Then configure as below:
-
-#### Voice Triggering
-
-For a single-mic standard monloith, the following settings are a good starting point for use with
-`Pianobook Piano Template - Voice Triggering.ksp`
-
-```
-    declare %note_without_pedal_groups[3]  := (0,1,2)
-    declare %note_with_pedal_groups[3]     := (3,4,5)
-    declare %release_trigger_groups[1]     := (6)
-    declare %pedal_down_groups[5]          := (7,8,9,10,11)
-    declare %pedal_up_groups[5]            := (12,13,14,15,16)
-```
-
-For a multi-mic standard monolith, the following settings are a good starting point for use with
-`Pianobook Piano Template - Voice Triggering (with Mic Levels).ksp`
-
-```
-    {                                      Groups for...   Mic 1           Mic 2           Mic 3      }
-    declare %note_without_pedal_groups[3 * $NUM_MICS]  := (0,1,2,          17,18,19,       34,35,36)
-    declare %note_with_pedal_groups[3 * $NUM_MICS]     := (3,4,5,          20,21,22,       37,38,39)
-    declare %release_trigger_groups[1 * $NUM_MICS]     := (6,              23,             40)
-    declare %pedal_down_groups[5 * $NUM_MICS]          := (7,8,9,10,11,    24,25,26,27,28, 41,42,43,44,45)
-    declare %pedal_up_groups[5 * $NUM_MICS]            := (12,13,14,15,16, 29,30,31,32,33, 46,47,48,49,50)
-```
-
-Also, for many instruments you may wish to change the round robin behaviour from random to sequential:
-
-```
-    declare $randomize_round_robins := 0
-```
-
-#### UI
-
-For a single-mic standard monloith, the following settings are a good starting point for use with
-`Pianobook Piano Template - UI.ksp`
-
-```
-    declare %note_groups[6]            := (0,1,2,3,4,5)
-    declare %release_trigger_groups[1] := (6)
-    declare %pedal_groups[10]          := (7,8,9,10,11,12,13,14,15,16)
-```
-
-For a multi-mic standard monolith, the following settings are a good starting point for use with
-`Pianobook Piano Template - UI (with Mic Levels).ksp`
-
-```
-    {                                       Groups for Mic 1            Groups for Mic 2               Groups for Mic 3       }
-    {                                       vvvvvvvvvvvvvvvv            vvvvvvvvvvvvvvvv               vvvvvvvvvvvvvvvv       }
-    declare %note_groups[18]            := (0,1,2,3,4,5,                17,18,19,20,21,22,             34,35,36,37,38,39)
-    declare %release_trigger_groups[3]  := (6,                          23,                            40)
-    declare %pedal_groups[30]           := (7,8,9,10,11,12,13,14,15,16, 24,25,26,27,28,29,30,31,32,33, 41,42,43,44,45,46,47,48,49,50)
-```
+The scripts should work out of the box, but you can tweak them as required.
 
 ## SFZ
 
