@@ -4,6 +4,11 @@ Project to help automate the generation of virutal instruments based on the
 "monolith" concept by Christian Henson. The project currently supports generation of 
 instruments in [Kontakt](#kontakt), [SFZ](#sfz) and [DecentSampler](#decentsampler).
 
+## Set-up
+
+1. Copy your monolith samples into the `samples` directory under the `instruments` directory
+2. Edit the config.lua file and set prefix, filepath, flavour and any other variable 
+
 ## Kontakt
 
 Kontakt instruments can be automatically created using Native Instruments Creator Tools.
@@ -46,6 +51,9 @@ After the automation has run you will need to perform the following manual steps
     is the Factory Default - Keytrack Tables - AR Table.
 15. In the Voices section increase the maximum number of voices from the default 32 to a much
     larger number (more than 200), particularly if you are using multiple mic positions.
+16. To attach the graphics resources, click the "Instrument Options" button
+17. In the "Resource Container" click the folder icon and browse for the Resources.nkr
+    file that is in the instruments folder
 
 ### Scripts
 

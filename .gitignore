@@ -1,14 +1,10 @@
 .DS_Store
 *.wav
 *.aif
-*.nkr
 *.nki
-*.nkc
 *.zip
 *.sfz
 *.dspreset
 *.dslibrary
 *.psd
-Resources/
-samples/
 session/
