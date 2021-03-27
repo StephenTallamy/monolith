@@ -27,7 +27,7 @@ on init
     { These variables are used by the Notes, RT, and Pedal knobs. Make sure you include 
       the groups for all the mics. Remember to change the size of the  arrays (the number 
       in brackets after the array name) if you add multiple groups to any of these.}
-]]..declares..[[]
+]]..declares..[[
     
     { This controls how responsive the knobs are. Make sure to keep this negative if you want this to be controllable via vertical dragging. }
     declare $controlSensitivity := -500
