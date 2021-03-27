@@ -47,7 +47,7 @@ on init
       the arrays (the first number in brackets after the array name) if you
       add multiple groups to any of these. }
 
-]]..declares..[[]
+]]..declares..[[
 
     { Release time that gets used when finger is let up on keys }
     declare $key_up_release_time_ms        := 400
