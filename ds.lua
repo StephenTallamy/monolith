@@ -46,7 +46,7 @@ function process_layer(file_path, prefix, layer, pedal)
     local group_label
     if layer == 'RT' then
         group_label = prefix..' release_triggers'
-        write_line('    <group trigger="release" name="'..group_label..'" volume="10">')
+        write_line('    <group trigger="release" name="'..group_label..'" volume="'..monolith.rt_boost_db..'dB">')
     elseif (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
         group_label = prefix..' '..layer:lower()
         local locc64
@@ -58,7 +58,7 @@ function process_layer(file_path, prefix, layer, pedal)
             locc64=0 
             hicc64=63
         end
-        write_line('    <group trigger="cc" name="'..group_label..'" onLoCC64="'..locc64..'" onHiCC64="'..hicc64..'">')
+        write_line('    <group trigger="cc" name="'..group_label..'" onLoCC64="'..locc64..'" onHiCC64="'..hicc64..'" volume="'..monolith.pedal_boost_db..'dB">')
     else
         group_label = prefix..' '..layer
         local locc64
