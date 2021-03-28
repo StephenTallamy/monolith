@@ -53,7 +53,19 @@ function process_layer(file_path, prefix, layer, pedal)
     local group_label
     if layer == 'RT' then
         group_label = prefix..' release_triggers'
-        write_line('    <group trigger="release" name="'..group_label..'">')
+        write_line('    <group trigger="release" name="'..group_label..'" volume="10">')
+    elseif (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
+        group_label = prefix..' '..layer:lower()
+        local locc64
+        local hicc64
+        if (layer == 'PEDAL_DOWN') then
+            locc64 = 64
+            hicc64 = 127
+        else
+            locc64=0 
+            hicc64=63
+        end
+        write_line('    <group trigger="cc" name="'..group_label..'" onLoCC64="'..locc64..'" onHiCC64="'..hicc64..'">')
     else
         group_label = prefix..' '..layer
         local locc64
@@ -73,12 +85,19 @@ function process_layer(file_path, prefix, layer, pedal)
     local file_prefix = string.sub(file_path, 0, -5)
     if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
         local note_bar_in = bar_in
+        local note_duration_bars = monolith.get_note_duration_bars(root, layer)
 
         for rr=1,monolith.num_pedal_rr do
             local sample_start = monolith.get_samples(note_bar_in)
-            local sample_end   = monolith.get_samples(note_bar_in+note_duration_bars)
+            local sample_end   = monolith.get_samples(note_bar_in + note_duration_bars)
             
-            -- TODO
+            write('      <sample pitchKeyTrack="0"')
+            if using_split then
+                file_path = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, use_rr, pedal)
+            else
+                write(' start="' .. sample_start..'" end="' .. sample_end..'"')
+            end
+            write_line(' path="'..file_path..'" seqPosition="' .. rr..'"/>')
             
             note_bar_in = note_bar_in + monolith.get_bars_between_pedals()
         end 
@@ -109,37 +128,44 @@ end
 write_line('<?xml version="1.0" encoding="UTF-8"?>')
 write_line('<DecentSampler pluginVersion="1">')
 write_line('  <groups>')
-local groups = { notes={}, rt={} }
+local groups = { notes={}, rt={}, pedal={} }
+local num_groups_per_file = 9
 for i,sample_file in pairs(monolith.files) do
     local prefix = monolith.prefix[i]
     process_layer(sample_file, prefix, 'F', false)
-    table.insert(groups.notes, (i - 1) * 7 + 0)
+    table.insert(groups.notes, (i - 1) * num_groups_per_file + 0)
     process_layer(sample_file, prefix, 'F', true)
-    table.insert(groups.notes, (i - 1) * 7 + 1)
+    table.insert(groups.notes, (i - 1) * num_groups_per_file + 1)
     process_layer(sample_file, prefix, 'MF', false)
-    table.insert(groups.notes, (i - 1) * 7 + 2)
+    table.insert(groups.notes, (i - 1) * num_groups_per_file + 2)
     process_layer(sample_file, prefix, 'MF', true)
-    table.insert(groups.notes, (i - 1) * 7 + 3)
+    table.insert(groups.notes, (i - 1) * num_groups_per_file + 3)
     process_layer(sample_file, prefix, 'P', false)
-    table.insert(groups.notes, (i - 1) * 7 + 4)
+    table.insert(groups.notes, (i - 1) * num_groups_per_file + 4)
     process_layer(sample_file, prefix, 'P', true)
-    table.insert(groups.notes, (i - 1) * 7 + 5)
+    table.insert(groups.notes, (i - 1) * num_groups_per_file + 5)
     process_layer(sample_file, prefix, 'RT')
-    table.insert(groups.rt,    (i - 1) * 7 + 6)
-    -- process_layer(sample_file, 'PEDAL_UP')
-    -- process_layer(sample_file, 'PEDAL_DOWN')
-
+    table.insert(groups.rt,    (i - 1) * num_groups_per_file + 6)
+    process_layer(sample_file, prefix, 'PEDAL_UP')
+    table.insert(groups.pedal, (i - 1) * num_groups_per_file + 7)
+    process_layer(sample_file, prefix, 'PEDAL_DOWN')
+    table.insert(groups.pedal, (i - 1) * num_groups_per_file + 8)
 end
 write_line('  </groups>')
 write_line('  <ui bgImage="Resources/pictures/background.png" width="812" height="375" layoutMode="relative" bgMode="top_left">')
 write_line('    <tab name="main">')
-write_line('      <labeled-knob x="300" y="100" label="NOTES" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="100" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+write_line('      <labeled-knob x="231" y="100" label="NOTES" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="100" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
 for i,group in pairs(groups.notes) do
     write_line('        <binding type="amp" level="group" position="'..group..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0"  />')
 end
 write_line('      </labeled-knob>')
-write_line('      <labeled-knob x="420" y="100" label="RT" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="60" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+write_line('      <labeled-knob x="351" y="100" label="RT" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="60" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
 for i,group in pairs(groups.rt) do
+    write_line('        <binding type="amp" level="group" position="'..group..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0"  />')
+end
+write_line('      </labeled-knob>')
+write_line('      <labeled-knob x="471" y="100" label="PEDALS" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="60" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+for i,group in pairs(groups.pedal) do
     write_line('        <binding type="amp" level="group" position="'..group..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0"  />')
 end
 write_line('      </labeled-knob>')
