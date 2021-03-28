@@ -50,6 +50,8 @@ monolith = {
     files           = {},
     prefix          = {},
     using_split     = false,
+    rt_boost_db     = 20,
+    pedal_boost_db  = 5,
 
     configure = function(config)       
         if config.flavour then
@@ -77,6 +79,14 @@ monolith = {
 
         if config.bpm then
             monolith.bpm = config.bpm
+        end
+
+        if config.rt_boost_db then
+            monolith.rt_boost_db = config.rt_boost_db
+        end
+
+        if config.pedal_boost_db then
+            monolith.pedal_boost_db = config.pedal_boost_db
         end
 
         if config.using_split then
