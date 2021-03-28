@@ -1,11 +1,4 @@
 dofile(scriptPath .. filesystem.preferred("/config.lua"))
-
-local using_split = false
-
-if config.using_split then
-    using_split = config.using_split
-end
-
 dofile(scriptPath .. filesystem.preferred("/common/monolith.lua"))
 
 monolith.configure(config)
@@ -49,7 +42,7 @@ function create_zone(groups, group_name, note_bar_in, note_bar_out, note_duratio
     zone.velocityRange.high = vol_high
 
     local group = groups[group_name]
-    if using_split then 
+    if monolith.using_split then 
         local sample_file = monolith.get_file_name(file_prefix, layer, root, zone.keyRange.low, zone.keyRange.high, vol_low, vol_high, use_rr, pedal)
         zone.file = sample_file
     else 

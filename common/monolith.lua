@@ -49,6 +49,7 @@ monolith = {
     bpm             = 115.2,
     files           = {},
     prefix          = {},
+    using_split     = false,
 
     configure = function(config)       
         if config.flavour then
@@ -76,6 +77,10 @@ monolith = {
 
         if config.bpm then
             monolith.bpm = config.bpm
+        end
+
+        if config.using_split then
+            monolith.using_split = config.using_split
         end
 
         if monolith.flavour == 'GIMP' then
