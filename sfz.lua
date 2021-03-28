@@ -1,11 +1,4 @@
 dofile("config.lua")
-
-local using_split = false
-
-if config.using_split then
-    using_split = config.using_split
-end
-
 dofile("common/monolith.lua")
 
 monolith.configure(config)
@@ -31,7 +24,7 @@ function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration
     
     write_line(string.format("// Note %s Group %s RR %d Bar In %d Bar Out %d", note_name, group_name, rr, note_bar_in, note_bar_out)) 
     write_line('<region>')
-    if using_split then 
+    if monolith.using_split then 
         local sample_file = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, use_rr, pedal)
         write_line('sample='..sample_file)
     else
@@ -61,7 +54,7 @@ function process_layer(sample_file, prefix, layer, pedal)
     if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
         write_line('<group>')
         write_line('group_label='..prefix..' '..layer:lower())
-        if using_split == false then
+        if monolith.using_split == false then
             write_line('sample=' .. sample_file)
         end
         write_line('hikey=0')
@@ -86,7 +79,7 @@ function process_layer(sample_file, prefix, layer, pedal)
             local sample_start = monolith.get_samples(note_bar_in)
             local sample_end   = monolith.get_samples(note_bar_in+note_duration_bars)
             write_line('<region>')
-            if using_split then 
+            if monolith.using_split then 
                 local sample_file = monolith.get_file_name(file_prefix, layer, 64, 64, 64, vol_low, vol_high, rr, pedal)
                 write_line('sample='..sample_file)
             else
@@ -101,7 +94,7 @@ function process_layer(sample_file, prefix, layer, pedal)
     else 
         write_line('<group>')
         local group_label
-        if using_split == false then
+        if monolith.using_split == false then
             write_line('sample=' .. sample_file)
         end
         write_line('lovel='..vol_low)

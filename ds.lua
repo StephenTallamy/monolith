@@ -1,11 +1,4 @@
 dofile("config.lua")
-
-local using_split = false
-
-if config.using_split then
-    using_split = config.using_split
-end
-
 dofile("common/monolith.lua")
 
 monolith.configure(config)
@@ -32,7 +25,7 @@ function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration
     local note_low     = math.max(root - monolith.note_interval + 1, monolith.min_note)
 
     write('      <sample hiNote="' .. root..'" loNote="' .. note_low..'" rootNote="' .. root..'"')
-    if using_split then
+    if monolith.using_split then
         file_path = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, use_rr, pedal)
     else
         write(' start="' .. sample_start..'" end="' .. sample_end..'"')
@@ -92,7 +85,7 @@ function process_layer(file_path, prefix, layer, pedal)
             local sample_end   = monolith.get_samples(note_bar_in + note_duration_bars)
             
             write('      <sample pitchKeyTrack="0"')
-            if using_split then
+            if monolith.using_split then
                 file_path = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, use_rr, pedal)
             else
                 write(' start="' .. sample_start..'" end="' .. sample_end..'"')
