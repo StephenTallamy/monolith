@@ -202,6 +202,9 @@ else
     end
     num_mics = #monolith.files
 
+    -- Total groups per mic are two lots of note rr (pedal/no-pedal), two lots of pedal rr plus one lot of release triggers
+    num_groups_per_mic = (monolith.max_rr * 2) + (monolith.num_pedal_rr * 2) + 1
+
     if num_mics > 1 then
         dofile(scriptPath .. filesystem.preferred("/kontakt/Pianobook Piano Template - UI (with Mic Levels).lua"))
         dofile(scriptPath .. filesystem.preferred("/kontakt/Pianobook Piano Template - Voice Triggering (with Mic Levels).lua"))
