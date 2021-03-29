@@ -1,10 +1,15 @@
 dofile(scriptPath .. filesystem.preferred("/kontakt/ksp_utils.lua"))
 
 local declares = string.format([[
+    declare const $NUM_MICS := %s
+    declare const $NUM_GROUPS_PER_MIC := %s
+
 %s
 %s
 %s
-]], 
+]],
+num_mics,
+num_groups_per_mic,
 get_declare(note_groups, "note_groups"), 
 get_declare(release_trigger_groups, "release_trigger_groups"), 
 get_declare(pedal_groups, "pedal_groups"))
@@ -35,6 +40,21 @@ on init
     { DON'T EDIT BELOW THIS POINT UNLESS YOU KNOW WHAT YOU'RE DOING }
 
     message("")
+
+    { Group Busses }
+    declare $bus := 0
+    declare $group := 0
+    declare $i
+    while ($bus < $NUM_MICS)
+        $i := 0
+        message($group)
+        while ($i < $NUM_GROUPS_PER_MIC)
+            set_engine_par($ENGINE_PAR_OUTPUT_CHANNEL, $NI_BUS_OFFSET + $bus, $group, -1, -1)
+            inc($group)
+            inc($i)
+        end while
+        inc($bus)
+    end while
     
     { UI Stuff }
     { Tell Kontakt we want a visible Performance View }

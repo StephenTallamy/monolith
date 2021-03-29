@@ -34,25 +34,21 @@ After the automation has run you will need to perform the following manual steps
 1. Click the Spanner icon to edit the instrument. 
 2. Open Group Editor, Mapping Editor, Wave Editor and Script Editor
 3. Disable "Edit All Groups"
-4. In the Expert view in the Browser pane shift multi-select all the groups for one mic
-5. Right-click and click "Set Edit flag for selected group(s)"
-6. In the Source section in the instrument window change the output from "default" to Bus 1
-7. Repeat steps 4 to 6 for each of the other mics so Mic 2 routes to Bus 2, etc
-8. In the Expert view, Command / Shift multi-select all the note_without_pedal and 
+4. In the Expert view, Command / Shift multi-select all the note_without_pedal and 
    note_with_pedal groups
-9. Right-click and click "Set Edit flag for selected group(s)"
-10. In the Source section open the Mod option for the Amplifier
-11. Click Add Modulator and choose Envelopes - ADHSR
-12. In the Modulation section of the instrument window, select the factory preset of "Piano"
+5. Right-click and click "Set Edit flag for selected group(s)"
+6. In the Source section open the Mod option for the Amplifier
+7. Click Add Modulator and choose Envelopes - ADHSR
+8. In the Modulation section of the instrument window, select the factory preset of "Piano"
    for the ADHSR envelope. You may wish to tweak this as appropriate.
-13. Add a second modulator and choose External Sources - Velocity
-14. You may wish to use the modulation shaper option for Velocity to create a table that
+9. Add a second modulator and choose External Sources - Velocity
+10. You may wish to use the modulation shaper option for Velocity to create a table that
     matches the velocity feel you wish for your instrument. A reasonable starting place
     is the Factory Default - Keytrack Tables - AR Table.
-15. In the Voices section increase the maximum number of voices from the default 32 to a much
+11. In the Voices section increase the maximum number of voices from the default 32 to a much
     larger number (more than 200), particularly if you are using multiple mic positions.
-16. To attach the graphics resources, click the "Instrument Options" button
-17. In the "Resource Container" click the folder icon and browse for the Resources.nkr
+12. To attach the graphics resources, click the "Instrument Options" button
+13. In the "Resource Container" click the folder icon and browse for the Resources.nkr
     file that is in the instruments folder
 
 ### Scripts
