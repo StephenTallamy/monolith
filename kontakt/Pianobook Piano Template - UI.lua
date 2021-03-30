@@ -43,7 +43,7 @@ on init
 
     { Group Busses }
     declare $bus := 0
-    declare $group := 0
+    declare $group := 1
     declare $i
     while ($bus < $NUM_MICS)
         $i := 0
