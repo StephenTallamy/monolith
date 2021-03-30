@@ -8,14 +8,13 @@ if (config.tuning_adjustment) then
     tuning_adjustment=config.tuning_adjustment
 end
 
-function create_group(groups, i, name)
-    local group
-    if i == 0 then
-        group = instrument.groups[0]
-    else 
-        group = Group()
-        instrument.groups:add(group)
+function create_group(groups, name, clone)
+    if clone then
+        instrument.groups:add(instrument.groups[0])
+    else
+        instrument.groups:add(Group())
     end
+    local group = instrument.groups[#instrument.groups - 1]
     group.name = name
     groups[name] = group
     return group
@@ -116,30 +115,30 @@ function setup_layer(groups, file, layer, pedal, group_prefix)
     end
 end  
 
-function process_samples(start_idx, file, prefix)    
+function process_samples(file, prefix)    
     print("Process file ")
     print(file)
 
     local groups = {}
     for i=0,monolith.max_rr-1 do
         local group_name = prefix..' note_without_pedal rr'..(i+1)
-        create_group(groups, start_idx + i, group_name)
+        create_group(groups, group_name, true)
     end
 
     for i=monolith.max_rr,(2 * monolith.max_rr)-1 do
         local group_name = prefix..' note_with_pedal rr'..(i-monolith.max_rr+1)
-        create_group(groups, start_idx + i, group_name)
+        create_group(groups, group_name, true)
     end
 
-    create_group(groups, i, prefix..' release_triggers')
+    create_group(groups, prefix..' release_triggers', false)
 
     for i=1,monolith.num_pedal_rr do
         local group_name = prefix..' pedal_down rr'..i
-        create_group(groups, start_idx + i, group_name)
+        create_group(groups, group_name, false)
     end
     for i=1,monolith.num_pedal_rr do
         local group_name = prefix..' pedal_up rr'..i
-        create_group(groups, start_idx + i, group_name)
+        create_group(groups, group_name, false)
     end
     
     setup_layer(groups, file, 'F',  true,  prefix..' note_with_pedal')
@@ -166,11 +165,13 @@ else
     -- Set the name
     instrument.name = config.instrument
     -- Reset the instrument groups.
-    instrument.groups:reset()
+    instrument.groups:resize(1)
+    instrument.groups[0].name = "Default group_template"
+    instrument.groups[0].zones:reset()
     for i,sample_file in pairs(monolith.files) do
         local prefix = monolith.prefix[i]     
         local file = scriptPath .. filesystem.preferred("/instruments/" .. sample_file)
-        process_samples(i - 1, file, prefix)
+        process_samples(file, prefix)
     end
 
     note_groups = {}
