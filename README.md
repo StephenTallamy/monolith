@@ -75,7 +75,7 @@ The scripts should work out of the box, but you can tweak them as required.
 
 ## SFZ
 
-To generate a SFZ file, [https://www.lua.org/start.html](install lua) and then simply run
+To generate a SFZ file, [install lua](https://www.lua.org/start.html) and then simply run
 
 ```
 lua sfz.lua
@@ -83,7 +83,7 @@ lua sfz.lua
 
 ## DecentSampler
 
-To generate a DecentSampler dspreset file, [https://www.lua.org/start.html](install lua) and then simply run
+To generate a DecentSampler dspreset file, [install lua](https://www.lua.org/start.html) and then simply run
 
 ```
 lua ds.lua
