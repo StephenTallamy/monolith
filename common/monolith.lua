@@ -94,6 +94,7 @@ monolith = {
         end
 
         if monolith.flavour == 'GIMP' then
+            layer_map['F']['start_bar']        = 5
             layer_map['F']['start_bar_pedal']  = 1266
             layer_map['RT']['start_bar']       = 186
             layer_map['RT']['start_bar_pedal'] = 1446
