@@ -113,18 +113,6 @@ monolith = {
             layer_map['MF']['start_bar'] = layer_map['MF']['start_bar_pedal']
             layer_map['P']['start_bar']  = layer_map['P']['start_bar_pedal']
         end
-        
-        if monolith.flavour == 'MODULAR' then
-            -- no P layer in MODULAR and no notes without pedal
-            layer_map['F']['vol_low']          = 97 
-            layer_map['F']['start_bar_pedal']  = 5
-            layer_map['RT']['start_bar']       = 186
-            layer_map['MF']['start_bar']       = 276
-            layer_map['MF']['start_bar_pedal'] = 276
-            layer_map['MF']['vol_low']         = 0 
-            layer_map['MF']['vol_high']        = 96    
-            monolith.max_rr = 4
-        end
     end,
 
     get_layer_info = function(layer)
@@ -159,7 +147,7 @@ monolith = {
         if     layer   == 'RT'   then return 2
         elseif monolith.flavour == 'GIMP' and layer == 'PEDAL_UP' then return 4
         elseif layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN' then return 2  
-        elseif monolith.flavour == 'GIMP' or monolith.flavour == 'MODULAR' then return monolith.get_note_duration_bars_v1(note_number, layer)
+        elseif monolith.flavour == 'GIMP' then return monolith.get_note_duration_bars_v1(note_number, layer)
         else   return monolith.get_note_duration_bars_v2(note_number, layer)
         end
     end,
@@ -187,7 +175,7 @@ monolith = {
 
     get_num_rr = function (note_number, layer)
         if     layer == 'RT' or layer == 'F' then return 1
-        elseif monolith.flavour == 'GIMP' or monolith.flavour == 'MODULAR' then return monolith.get_num_rr_v1(note_number, layer)
+        elseif monolith.flavour == 'GIMP' then return monolith.get_num_rr_v1(note_number, layer)
         else   return monolith.get_num_rr_v2(note_number, layer)
         end
     end,
