@@ -19,7 +19,8 @@ Creator Tools.
 Steps to run the automation:
 
 1. Load Creator Tools (1.3 and above) and Kontakt (6.5 and above)
-2. In Kontakt click the blank instrument area to create a new instrument
+2. In Kontakt load the Template.nki from the instruments directory (you can create 
+   your own template if you prefer - see belowxs)
 3. In Creator Tools open the `monolith.ncpr` project
 4. Open the kontakt.lua script and hit the run button
 5. Click the "Push to Kontakt" arrow to apply the changes to the Kontakt instrument
@@ -47,22 +48,23 @@ automation as it can cause Kontakt to hang / go slow.
 > 3. In the Source section open the Mod option for the Amplifier and make
 >    and adjustments as appropriate
 
-### Additional Steps
+### Creating your own Template.nki
 
-After the automation has run you will need to perform the following manual steps
-(hopefully these can be automated at some point)
+If you would like to create your own Template.nki the following steps can be used
 
-1. Click the Spanner icon to edit the instrument.
-2. Open Group Editor, Mapping Editor, Wave Editor and Script Editor
-3. Disable "Edit All Groups"
-4. In the Expert view, Command / Shift multi-select all the note_without_pedal and
+1. In Kontakt click the blank instrument area to create an empty instrument
+2. Click the Spanner icon to edit the instrument.
+3. Open Group Editor, Mapping Editor, Wave Editor and Script Editor
+4. Disable "Edit All Groups"
+5. In the Expert view, Command / Shift multi-select all the note_without_pedal and
    note_with_pedal groups
-5. In the Voices section increase the maximum number of voices from the default 32
+6. In the Voices section increase the maximum number of voices from the default 32
    to a much larger number (more than 200), particularly if you are using multiple
    mic positions.
-6. To attach the graphics resources, click the "Instrument Options" button
-7. In the "Resource Container" click the folder icon and browse for the
+7. To attach the graphics resources, click the "Instrument Options" button
+8. In the "Resource Container" click the folder icon and browse for the
    `Resources.nkr` file that is in the instruments folder
+9. Edit any of the Group 0 setting such as envelope, velocity curves, etc
 
 ### KSP Scripts
 
