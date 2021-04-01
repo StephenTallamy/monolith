@@ -72,6 +72,8 @@ on init
 
     { Declare top row of controls. These control volumes for the three busses. }
     declare ui_slider $MicOneSlider(1, 6300)
+    set_knob_defval($MicOneSlider, 6300)
+    $MicOneSlider := 6300
     make_persistent($MicOneSlider)
     declare $MicOneSliderId
     $MicOneSliderId := get_ui_id($MicOneSlider)
@@ -79,6 +81,8 @@ on init
     set_control_par($MicOneSliderId,$CONTROL_PAR_MOUSE_BEHAVIOUR, $controlSensitivity)
 
     declare ui_slider $MicTwoSlider(1, 6300)
+    set_knob_defval($MicTwoSlider, 6300)
+    $MicTwoSlider := 6300
     make_persistent($MicTwoSlider)
     declare $MicTwoSliderId
     $MicTwoSliderId := get_ui_id($MicTwoSlider)
@@ -86,6 +90,8 @@ on init
     set_control_par($MicTwoSliderId,$CONTROL_PAR_MOUSE_BEHAVIOUR, $controlSensitivity)
 
     declare ui_slider $MicThreeSlider(1, 6300)
+    set_knob_defval($MicThreeSlider, 6300)
+    $MicThreeSlider := 6300
     make_persistent($MicThreeSlider)
     declare $MicThreeSliderId
     $MicThreeSliderId := get_ui_id($MicThreeSlider)
@@ -99,6 +105,7 @@ on init
 
     { Declare knobs for the middle row of controls }
     declare ui_slider $NotesSlider(1, 630000)
+    $NotesSlider := 630000
     set_knob_defval($NotesSlider, 630000)
     make_persistent($NotesSlider)
     declare $NotesSliderId
@@ -107,6 +114,7 @@ on init
     set_control_par($NotesSliderId,$CONTROL_PAR_MOUSE_BEHAVIOUR, $controlSensitivity)
 
     declare ui_slider $RTSlider(1, 630000)
+    $RTSlider := 630000
     set_knob_defval($RTSlider, 630000)
     make_persistent($RTSlider)
     declare $RTSliderId
@@ -115,6 +123,7 @@ on init
     set_control_par($RTSliderId,$CONTROL_PAR_MOUSE_BEHAVIOUR, $controlSensitivity)
 
     declare ui_slider $PedalsSlider(1, 630000)
+    $PedalsSlider := 630000
     set_knob_defval($PedalsSlider, 630000)
     make_persistent($PedalsSlider)
     declare $PedalsSliderId
@@ -129,6 +138,8 @@ on init
 
     { Declare knobs for the bottom row of controls }
     declare ui_slider $Vol(0, 100)
+    $Vol := 100
+    set_knob_defval($Vol, 100)
     make_persistent($Vol)
     declare $VolId
     $VolId := get_ui_id($Vol)
@@ -136,6 +147,8 @@ on init
     set_control_par($VolId,$CONTROL_PAR_MOUSE_BEHAVIOUR,$controlSensitivity)
 
     declare ui_slider $FxOne(1, 1000000)
+    $FxOne := 0
+    set_knob_defval($FxOne, 0)
     make_persistent($FxOne)
     declare $FxOneId
     $FxOneId := get_ui_id($FxOne)
@@ -143,6 +156,8 @@ on init
     set_control_par($FxOneId,$CONTROL_PAR_MOUSE_BEHAVIOUR,$controlSensitivity)
 
     declare ui_slider $FxTwo(1, 500000)
+    $FxTwo := 0
+    set_knob_defval($FxTwo, 0)
     make_persistent($FxTwo)
     declare $FxTwoId
     $FxTwoId := get_ui_id($FxTwo)

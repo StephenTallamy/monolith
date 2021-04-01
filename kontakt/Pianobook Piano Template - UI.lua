@@ -72,7 +72,8 @@ on init
 
     { Declare top row of controls. These control volumes for the three busses. }
     declare ui_slider $NotesSlider(1, 630000)
-
+    $NotesSlider := 630000
+    set_knob_defval($NotesSlider, 630000)
     make_persistent($NotesSlider)
     declare $NotesSliderId
     $NotesSliderId := get_ui_id($NotesSlider)
@@ -80,6 +81,8 @@ on init
     set_control_par($NotesSliderId,$CONTROL_PAR_MOUSE_BEHAVIOUR, $controlSensitivity)
 
     declare ui_slider $RTSlider(1, 630000)
+    $RTSlider := 630000
+    set_knob_defval($RTSlider, 630000)
     make_persistent($RTSlider)
     declare $RTSliderId
     $RTSliderId := get_ui_id($RTSlider)
@@ -87,6 +90,8 @@ on init
     set_control_par($RTSliderId,$CONTROL_PAR_MOUSE_BEHAVIOUR, $controlSensitivity)
 
     declare ui_slider $PedalsSlider(1, 630000)
+    $PedalsSlider := 630000
+    set_knob_defval($PedalsSlider, 630000)
     make_persistent($PedalsSlider)
     declare $PedalsSliderId
     $PedalsSliderId := get_ui_id($PedalsSlider)
@@ -99,7 +104,9 @@ on init
     move_control_px($PedalsSlider, 395,95)
 
     { Declare knobs for the bottom row of controls }
-    declare ui_slider $Vol(1, 100)
+    declare ui_slider $Vol(0, 100)
+    $Vol := 100
+    set_knob_defval($Vol, 100)
     make_persistent($Vol)
     declare $VolId
     $VolId := get_ui_id($Vol)
@@ -107,6 +114,8 @@ on init
     set_control_par($VolId,$CONTROL_PAR_MOUSE_BEHAVIOUR,$controlSensitivity)
 
     declare ui_slider $FxOne(1, 1000000)
+    $FxOne := 0
+    set_knob_defval($FxOne, 0)
     make_persistent($FxOne)
     declare $FxOneId
     $FxOneId := get_ui_id($FxOne)
@@ -114,6 +123,8 @@ on init
     set_control_par($FxOneId,$CONTROL_PAR_MOUSE_BEHAVIOUR,$controlSensitivity)
 
     declare ui_slider $FxTwo(1, 500000)
+    $FxTwo := 0
+    set_knob_defval($FxTwo, 0)
     make_persistent($FxTwo)
     declare $FxTwoId
     $FxTwoId := get_ui_id($FxTwo)
