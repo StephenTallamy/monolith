@@ -96,5 +96,8 @@ lua ds.lua
 > TIP: You can create a long placeholder WAV file for "DOES_NOT_EXIST.wav" using ffmpeg
 
 ```
-ffmpeg -f lavfi -i "sine=frequency=1000:sample_rate=48000:duration=5796" -c:a pcm_s24le DOES_NOT_EXIST.wav
+ffmpeg -f lavfi -i "sine=frequency=1000:sample_rate=48000:duration=5358" -ac 2 -c:a pcm_s24le instruments/samples/DOES_NOT_EXIST.wav
 ```
+
+In the above `duration=5358` is the length of a DEFAULT monolith (1h29m18s).
+Use `duration=2756` for a SAME_PEDALS monolith (0h45m56s).
