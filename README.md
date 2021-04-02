@@ -1,20 +1,31 @@
 # Monolith Generator
 
-Project to help automate the generation of virutal instruments based on the
-"monolith" concept by Christian Henson. The project currently supports generation of
-instruments in [Kontakt](#kontakt), [SFZ](#sfz) and [DecentSampler](#decentsampler).
+Project to help automate the generation of virtual instruments based on the
+[monolith](https://www.pianobook.co.uk/monolith/) concept by Christian Henson. 
 
-## Set-up
+The project currently supports generation of instruments in [Kontakt](#kontakt), 
+[SFZ](#sfz) and [DecentSampler](#decentsampler).
 
-1. Copy your monolith samples into the `samples` directory under the `instruments` directory
+## Getting started
+
+Download the `Source Code` zip file from the [Latest Release](https://github.com/StephenTallamy/monolith/releases).
+
+## Recording
+
+There is a Logic Template to help with the recording and editing of the monolith.
+For more details on how to use the Logic Template the section on 
+[Pianobook](https://www.pianobook.co.uk/monolith/)
+
+## Building instruments
+
+1. Copy your monolith samples into the `samples` directory under the `instruments` 
+   directory
 2. Edit the config.lua file and set prefix, filepath, flavour and any other variable
 
-## Kontakt
+### Kontakt
 
 Kontakt instruments can be automatically created using Native Instruments
 Creator Tools.
-
-### Automation
 
 Steps to run the automation:
 
@@ -48,7 +59,7 @@ automation as it can cause Kontakt to hang / go slow.
 > 3. In the Source section open the Mod option for the Amplifier and make
 >    and adjustments as appropriate
 
-### Creating your own Template.nki
+#### Creating your own Template.nki
 
 If you would like to create your own Template.nki the following steps can be used
 
@@ -66,7 +77,7 @@ If you would like to create your own Template.nki the following steps can be use
    `Resources.nkr` file that is in the instruments folder
 9. Edit any of the Group 0 setting such as envelope, velocity curves, etc
 
-### KSP Scripts
+#### KSP Scripts
 
 The generated Kontakt files will automatically add the approriate scripts from
 Dave Hilowitz's piano template scripts:
@@ -75,7 +86,7 @@ https://github.com/dhilowitz/kontakt-piano-template
 
 The scripts should work out of the box, but you can tweak them as required.
 
-## SFZ
+### SFZ
 
 To generate a SFZ file, [install lua](https://www.lua.org/start.html) and then simply run
 
@@ -83,7 +94,7 @@ To generate a SFZ file, [install lua](https://www.lua.org/start.html) and then s
 lua sfz.lua
 ```
 
-## DecentSampler
+### DecentSampler
 
 To generate a DecentSampler dspreset file, [install lua](https://www.lua.org/start.html) and then simply run
 
