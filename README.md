@@ -39,6 +39,9 @@ To configure the automation, edit the config.lua. The following variables can be
 - `using_split` If you split your monolith (see below) you can set this to `true` 
                 (default is `false`).
 
+There are a set of example configurations from instruments released on Pianobook
+in (config_examples.lua).
+
 ### Splitting the monolith
 
 The automation scripts can work directly with full monolith files and this makes it
