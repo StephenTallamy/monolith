@@ -1,12 +1,15 @@
-dofile(scriptPath .. filesystem.preferred("/kontakt/ksp_utils.lua"))
+dofile(scriptPath .. filesystem.preferred("/lib/kontakt/ksp_utils.lua"))
 
 local declares = string.format([[
+    declare const $NUM_MICS := %s
+
 %s
 %s
 %s
 %s
 %s
 ]],
+num_mics, 
 get_declare(note_without_pedal_groups, "note_without_pedal_groups"), 
 get_declare(note_with_pedal_groups, "note_with_pedal_groups"),
 get_declare(release_trigger_groups, "release_trigger_groups"),
@@ -34,11 +37,14 @@ on init
       array empty. An empty array looks like this: ().
       
       You must at least have a $note_without_pedal_group.
-      You do not need to use the round robin functionality of this template.
-      It is perfectly find to have only one group in each of these arrays.
+      By default, this template is set up with four round robins per sound type–
+      that's why there's a number 4 in the array declarations below, eg. 4 * $NUM_MICS.
+      If you change the number of round robins, you'll also want to change this number.
+      You do not need to use the round robin functionality of this template. 
+      It is perfectly fine to have only one group in each of these arrays.
       It is assumed that if there is more than one group in any of 
       these, we will do round robins. Remember to change the size of
-      the arrays (the number in brackets after the array name) if you
+      the arrays (the first number in brackets after the array name) if you
       add multiple groups to any of these. }
 
 ]]..declares..[[
@@ -49,6 +55,8 @@ on init
     they will be random (but with code to prevent the same sample triggering twice 
     in a row).} 
     declare $randomize_round_robins := 0
+
+    { DON'T EDIT BELOW THIS POINT UNLESS YOU KNOW WHAT YOU'RE DOING }
 
     SET_CONDITION(NO_SYS_SCRIPT_PEDAL)
     SET_CONDITION(NO_SYS_SCRIPT_RLS_TRIG)
@@ -70,40 +78,25 @@ on init
     declare $tmp_rr := 0
     declare $tmp_num_round_robins
     declare $tmp_last_rr
-    declare $note_without_pedal_last_rr := 0
-    declare $note_with_pedal_last_rr := 0
-    declare $release_trigger_last_rr := 0
-    declare $pedal_down_last_rr := 0
-    declare $pedal_up_last_rr := 0
+    declare %last_rr[5] := (0,0,0,0,0)
 end on
 
 function func_play_note
-    {
-    Inputs:
-    - the group that we are working with
-    - the last RR for that group
-    - the number of round robins for the group
-    - the number of mics }
-
     { message("func_play_generic_note") }
+    $tmp_last_rr := %last_rr[$func_play_note_type-1]
     select($func_play_note_type)
         case 1
-            $tmp_num_round_robins := num_elements(%note_without_pedal_groups)
-            $tmp_last_rr := $note_without_pedal_last_rr
+            $tmp_num_round_robins := num_elements(%note_without_pedal_groups) / $NUM_MICS
         case 2
-            $tmp_num_round_robins := num_elements(%note_with_pedal_groups)
-            $tmp_last_rr := $note_with_pedal_last_rr
+            $tmp_num_round_robins := num_elements(%note_with_pedal_groups) / $NUM_MICS
         case 3
-            $tmp_num_round_robins := num_elements(%release_trigger_groups)
-            $tmp_last_rr := $release_trigger_last_rr
+            $tmp_num_round_robins := num_elements(%release_trigger_groups) / $NUM_MICS
         case 4
-            $tmp_num_round_robins := num_elements(%pedal_down_groups)
-            $tmp_last_rr := $pedal_down_last_rr
+            $tmp_num_round_robins := num_elements(%pedal_down_groups) / $NUM_MICS
             $func_play_note_midi_note := 64
             $func_play_note_velocity := 64
         case 5
-            $tmp_num_round_robins := num_elements(%pedal_up_groups)
-            $tmp_last_rr := $pedal_up_last_rr
+            $tmp_num_round_robins := num_elements(%pedal_up_groups) / $NUM_MICS
             $func_play_note_midi_note := 64
             $func_play_note_velocity := 64
     end select
@@ -137,23 +130,24 @@ function func_play_note
     $tmp_note_id := play_note($func_play_note_midi_note, $func_play_note_velocity, 0, -1) 
     set_event_par_arr($tmp_note_id,$EVENT_PAR_ALLOW_GROUP,0,$ALL_GROUPS)
 
-    select($func_play_note_type)
-        case 1
-            $note_without_pedal_last_rr := $tmp_rr
-            set_event_par_arr($tmp_note_id,$EVENT_PAR_ALLOW_GROUP,1,%note_without_pedal_groups[$tmp_rr])
-        case 2
-            $note_with_pedal_last_rr := $tmp_rr
-            set_event_par_arr($tmp_note_id,$EVENT_PAR_ALLOW_GROUP,1,%note_with_pedal_groups[$tmp_rr])
-        case 3
-            $release_trigger_last_rr := $tmp_rr
-            set_event_par_arr($tmp_note_id,$EVENT_PAR_ALLOW_GROUP,1,%release_trigger_groups[$tmp_rr])
-        case 4
-            $pedal_down_last_rr := $tmp_rr
-            set_event_par_arr($tmp_note_id,$EVENT_PAR_ALLOW_GROUP,1,%pedal_down_groups[$tmp_rr])
-        case 5
-            $pedal_up_last_rr := $tmp_rr
-            set_event_par_arr($tmp_note_id,$EVENT_PAR_ALLOW_GROUP,1,%pedal_up_groups[$tmp_rr])
-    end select
+    message("RR: " & $tmp_rr)
+    %last_rr[$func_play_note_type-1] := $tmp_rr
+    $i:= 0
+    while($i<$NUM_MICS)
+        select($func_play_note_type)
+            case 1
+                set_event_par_arr($tmp_note_id,$EVENT_PAR_ALLOW_GROUP,1, %note_without_pedal_groups[$i*$tmp_num_round_robins + $tmp_rr])
+            case 2
+                set_event_par_arr($tmp_note_id,$EVENT_PAR_ALLOW_GROUP,1, %note_with_pedal_groups[$i*$tmp_num_round_robins + $tmp_rr])
+            case 3
+                set_event_par_arr($tmp_note_id,$EVENT_PAR_ALLOW_GROUP,1, %release_trigger_groups[$i*$tmp_num_round_robins + $tmp_rr])
+            case 4
+                set_event_par_arr($tmp_note_id,$EVENT_PAR_ALLOW_GROUP,1, %pedal_down_groups[$i*$tmp_num_round_robins + $tmp_rr])
+            case 5
+                set_event_par_arr($tmp_note_id,$EVENT_PAR_ALLOW_GROUP,1, %pedal_up_groups[$i*$tmp_num_round_robins + $tmp_rr])
+        end select
+        inc($i)
+    end while
 end function
 
 function func_stop_all_non_held_notes

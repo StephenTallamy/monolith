@@ -1,5 +1,5 @@
 dofile(scriptPath .. filesystem.preferred("/config.lua"))
-dofile(scriptPath .. filesystem.preferred("/common/monolith.lua"))
+dofile(scriptPath .. filesystem.preferred("/lib/common/monolith.lua"))
 
 monolith.configure(config)
 
@@ -207,11 +207,11 @@ else
     num_groups_per_mic = (monolith.max_rr * 2) + (monolith.num_pedal_rr * 2) + 1
 
     if num_mics > 1 then
-        dofile(scriptPath .. filesystem.preferred("/kontakt/Pianobook Piano Template - UI (with Mic Levels).lua"))
-        dofile(scriptPath .. filesystem.preferred("/kontakt/Pianobook Piano Template - Voice Triggering (with Mic Levels).lua"))
+        dofile(scriptPath .. filesystem.preferred("/lib/kontakt/Pianobook Piano Template - UI (with Mic Levels).lua"))
+        dofile(scriptPath .. filesystem.preferred("/lib/kontakt/Pianobook Piano Template - Voice Triggering (with Mic Levels).lua"))
     else
-        dofile(scriptPath .. filesystem.preferred("/kontakt/Pianobook Piano Template - UI.lua"))
-        dofile(scriptPath .. filesystem.preferred("/kontakt/Pianobook Piano Template - Voice Triggering.lua"))
+        dofile(scriptPath .. filesystem.preferred("/lib/kontakt/Pianobook Piano Template - UI.lua"))
+        dofile(scriptPath .. filesystem.preferred("/lib/kontakt/Pianobook Piano Template - Voice Triggering.lua"))
     end
 
     instrument.scripts[0].name = "Pianobook UI"

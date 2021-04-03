@@ -1,5 +1,5 @@
 dofile("config.lua")
-dofile("common/monolith.lua")
+dofile("lib/common/monolith.lua")
 
 monolith.configure(config)
 
