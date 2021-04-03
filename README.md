@@ -75,7 +75,7 @@ Steps to run the automation:
 
 1. Load Creator Tools (1.3 and above) and Kontakt (6.5 and above)
 2. In Kontakt load the Template.nki from the instruments directory (you can create 
-   your own template if you prefer - see belowxs)
+   your own template if you prefer - see below)
 3. In Creator Tools open the `monolith.ncpr` project
 4. Open the kontakt.lua script and hit the run button
 5. Click the "Push to Kontakt" arrow to apply the changes to the Kontakt instrument
