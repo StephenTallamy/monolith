@@ -13,7 +13,8 @@ if (config.tuning_adjustment) then
     tuning_adjustment=config.tuning_adjustment
 end
 
-local file = io.open('instruments/'..config.instrument..".sfz", "w")
+local sfzFile = 'instruments/'..config.instrument..".sfz"
+local file = io.open(sfzFile, "w")
 
 function write_line(line)
     file:write(line..'\n')
@@ -187,3 +188,5 @@ for i,sample_file in pairs(monolith.files) do
     process_layer(sample_file, prefix, 'PEDAL_DOWN')
 end
 file:close()
+
+print('Created '..sfzFile)

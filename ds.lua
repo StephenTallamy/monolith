@@ -9,7 +9,8 @@ if (config.tuning_adjustment) then
     tuning_adjustment=config.tuning_adjustment
 end
 
-local file = io.open('instruments/'..config.instrument..".dspreset", "w")
+local dspresetFile = 'instruments/'..config.instrument..".dspreset"
+local file = io.open(dspresetFile, "w")
 
 function write(line)
     file:write(line)
@@ -169,3 +170,5 @@ write_line('  </ui>')
 write_line('</DecentSampler>')
 
 file:close()
+
+print('Created '..dspresetFile)
