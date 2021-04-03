@@ -211,7 +211,7 @@ monolith = {
             sample_file = sample_file .. "_pedal_up" 
         elseif layer == 'PEDAL_DOWN' then
             sample_file = sample_file .. "_pedal_down"             
-        elseif pedal == true or monolith.flavour == 'SAME_PEDALS' then
+        elseif pedal == true or monolith.flavour == 'SAME_PEDALS' or monolith.flavour == 'MVP' then
             sample_file = sample_file .. "_withpedal"
         else 
             sample_file = sample_file .. "_nopedal" 
