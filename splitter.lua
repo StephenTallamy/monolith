@@ -7,8 +7,8 @@ else
     files = {config.filepath}
 end
 
-dofile("common/wav.lua")
-dofile("common/monolith.lua")
+dofile("lib/common/wav.lua")
+dofile("lib/common/monolith.lua")
 
 monolith.configure(config)
 
