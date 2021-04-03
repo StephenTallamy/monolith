@@ -86,14 +86,16 @@ for i,sample_file in pairs(files) do
     print("Bitrate:     " .. bitrate)
     print("Flavour:     " .. monolith.flavour)
     print('------------------------------------------------------------------------------')
-
-    process_layer(reader, 'F',  false, num_channels, sample_rate, bitrate)
+   
     process_layer(reader, 'F',  true, num_channels, sample_rate, bitrate)
-    process_layer(reader, 'MF', false, num_channels, sample_rate, bitrate)
     process_layer(reader, 'MF', true, num_channels, sample_rate, bitrate)
-    process_layer(reader, 'P',  false, num_channels, sample_rate, bitrate)
     process_layer(reader, 'P',  true, num_channels, sample_rate, bitrate)
     process_layer(reader, 'RT', false, num_channels, sample_rate, bitrate)
     process_layer(reader, 'PEDAL_UP',  false, num_channels, sample_rate, bitrate)
     process_layer(reader, 'PEDAL_DOWN',false, num_channels, sample_rate, bitrate)
+    if (monolith.flavour ~= 'SAME_PEDALS') then
+        process_layer(reader, 'F',  false, num_channels, sample_rate, bitrate)
+        process_layer(reader, 'MF', false, num_channels, sample_rate, bitrate)
+        process_layer(reader, 'P',  false, num_channels, sample_rate, bitrate)
+    end
 end
