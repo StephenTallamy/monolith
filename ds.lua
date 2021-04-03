@@ -79,14 +79,15 @@ function process_layer(file_path, prefix, layer, pedal)
     if (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
         local note_bar_in = bar_in
         local note_duration_bars = monolith.get_note_duration_bars(root, layer)
-
+        root = 64 -- matches script
+        
         for rr=1,monolith.num_pedal_rr do
             local sample_start = monolith.get_samples(note_bar_in)
             local sample_end   = monolith.get_samples(note_bar_in + note_duration_bars)
             
             write('      <sample pitchKeyTrack="0"')
             if monolith.using_split then
-                file_path = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, use_rr, pedal)
+                file_path = monolith.get_file_name(file_prefix, layer, root, root, root, vol_low, vol_high, rr, pedal)
             else
                 write(' start="' .. sample_start..'" end="' .. sample_end..'"')
             end
