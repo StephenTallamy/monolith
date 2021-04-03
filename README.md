@@ -40,7 +40,7 @@ To configure the automation, edit the config.lua. The following variables can be
                 (default is `false`).
 
 There are a set of example configurations from instruments released on Pianobook
-in (config_examples.lua).
+in [config_examples.lua](config_examples.lua).
 
 ### Splitting the monolith
 
