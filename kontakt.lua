@@ -34,7 +34,7 @@ function create_zone(groups, group_name, note_bar_in, note_bar_out, note_duratio
         zone.keyRange.low  = root
     else
         zone.tune = tuning_adjustment / 100
-        zone.keyRange.low  = math.max(root - monolith.note_interval + 1, monolith.min_note)
+        zone.keyRange.low  = monolith.get_note_low(root)
     end
     zone.keyRange.high = root
     zone.velocityRange.low  = vol_low
@@ -62,7 +62,7 @@ function setup_layer(groups, file, layer, pedal, group_prefix)
     local vol_high           = layer_info['vol_high']
     local start_bar          = layer_info['start_bar']
     local start_bar_pedal    = layer_info['start_bar_pedal']
-    local root               = monolith.min_note
+    local root               = monolith.start_note
     local bar_in             = start_bar
     local file_prefix        = string.sub(file, 0, -5)
 

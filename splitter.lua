@@ -31,7 +31,7 @@ end
 
 function process_layer(reader, layer, pedal, num_channels, sample_rate, bitrate)
     local layer_info  = monolith.get_layer_info(layer)
-    local root        = monolith.min_note
+    local root        = monolith.start_note
     local bar_in      = layer_info['start_bar']
     local vol_low     = layer_info['vol_low']
     local vol_high    = layer_info['vol_high']
@@ -60,7 +60,7 @@ function process_layer(reader, layer, pedal, num_channels, sample_rate, bitrate)
             local note_duration_bars = monolith.get_note_duration_bars(root, layer)
             
             for rr=1,num_rrs do
-                local note_low = math.max(root - monolith.note_interval + 1, monolith.min_note)
+                local note_low = monolith.get_note_low(root)
 
                 local sample_file = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, rr, pedal)
 

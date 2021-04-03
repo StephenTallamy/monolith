@@ -24,7 +24,7 @@ function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration
     local note_name    = monolith.get_note_name(root)
     local sample_start = monolith.get_samples(note_bar_in)
     local sample_end   = monolith.get_samples(note_bar_out)
-    local note_low     = math.max(root - monolith.note_interval + 1, monolith.min_note)
+    local note_low     = monolith.get_note_low(root)
 
     write('      <sample hiNote="' .. root..'" loNote="' .. note_low..'" rootNote="' .. root..'"')
     if monolith.using_split then
@@ -37,7 +37,7 @@ end
 
 function process_layer(file_path, prefix, layer, pedal)
     local layer_info  = monolith.get_layer_info(layer)
-    local root        = monolith.min_note
+    local root        = monolith.start_note
     local bar_in      = layer_info['start_bar']
     local vol_low     = layer_info['vol_low']
     local vol_high    = layer_info['vol_high']

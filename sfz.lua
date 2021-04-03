@@ -22,7 +22,7 @@ end
 
 function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, use_rr, vol_low, vol_high, file_prefix, pedal)
     local note_name    = monolith.get_note_name(root)
-    local note_low     = math.max(root - monolith.note_interval + 1, monolith.min_note)
+    local note_low     = monolith.get_note_low(root)
     
     write_line(string.format("// Note %s Group %s RR %d Bar In %d Bar Out %d", note_name, group_name, rr, note_bar_in, note_bar_out)) 
     write_line('<region>')
@@ -44,7 +44,7 @@ end
 
 function process_layer(sample_file, prefix, layer, pedal)
     local layer_info  = monolith.get_layer_info(layer)
-    local root        = monolith.min_note
+    local root        = monolith.start_note
     local bar_in      = layer_info['start_bar']
     local vol_low     = layer_info['vol_low']
     local vol_high    = layer_info['vol_high']

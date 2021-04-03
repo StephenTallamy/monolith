@@ -43,6 +43,7 @@ monolith = {
     num_zones       = 30,
     note_interval   = 3,
     min_note        = 21,
+    start_note      = 21,
     flavour         = 'DEFAULT',
     sample_rate     = 48000,
     time_signature  = 4,
@@ -119,7 +120,7 @@ monolith = {
             monolith.max_rr = 1
             monolith.num_pedal_rr = 1
             monolith.note_interval = 7
-            monolith.min_note = 24
+            monolith.start_note = 24
             monolith.num_zones = 12
             layer_map['F']['vol_low'] = 96
             layer_map['MF']['vol_low'] = 0
@@ -142,6 +143,10 @@ monolith = {
         local idx = (note_num % 12) + 1
         local octave = math.floor(note_num / 12) - 2
         return note_map[idx]..octave
+    end,
+
+    get_note_low = function (root)
+        return math.max(root - monolith.note_interval + 1, monolith.min_note)
     end,
 
     get_note_duration_bars_v1 = function (note_number, layer)
