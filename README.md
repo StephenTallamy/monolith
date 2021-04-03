@@ -13,14 +13,55 @@ Download the `Source Code` zip file from the [Latest Release](https://github.com
 ## Recording
 
 There is a Logic Template to help with the recording and editing of the monolith.
-For more details on how to use the Logic Template the section on 
-[Pianobook](https://www.pianobook.co.uk/monolith/)
+For more details on how to use the Logic Template the section on the
+[Pianobook Monolith](https://www.pianobook.co.uk/monolith/) page.
 
 ## Building instruments
 
-1. Copy your monolith samples into the `samples` directory under the `instruments` 
-   directory
-2. Edit the config.lua file and set prefix, filepath, flavour and any other variable
+Once you have recorded and edited your samples, copy your monolith samples wav files
+into the `samples` directory under the `instruments` directory.
+
+### Configuration
+
+To configure the automation, edit the config.lua. The following variables can be set:
+
+- `instrument`  The name of your instrument.
+- `filepath`    Path(s) to the monolith file(s) - can be a single string or a list 
+                for multiple mic signals. Lists are comma seperated and enclosed in
+                curly brackets `{}`.
+- `prefix`      The prefix to use for each file in various names - can be a single
+                string or a list for multple mic signals. Lists are comma seperated 
+                and enclosed in curly brackets `{}`. The number of prefixes must 
+                match the number of filepaths.
+- `flavour`     The type of monolith (`DEFAULT`/`SAME_PEDALS`).
+- `bpm`         The Logic recording template is set to 115.2 BPM but if you change to
+                a different BPM you can set it with this variable.
+- `using_split` If you split your monolith (see below) you can set this to `true` 
+                (default is `false`).
+
+### Splitting the monolith
+
+The automation scripts can work directly with full monolith files and this makes it
+very easy to quickly test out your samples in an instrument across the different 
+platforms.
+
+One drawback to running the full monolith directly in samplers 
+(particularly Kontakt) is it can put extra strain on CPU and memory. To handle
+this you can automatically split the monolith files into files with only one sample
+per file.
+
+To generate the split files, [install lua](https://www.lua.org/start.html) and 
+then simply run
+
+```
+lua splitter.lua
+```
+
+Then within your `config.lua` file set `using_split=true` and build your instruments
+as described below.
+
+In general it is recommended to use raw monolith until distribution, and then 
+consider splitting the monolith.
 
 ### Kontakt
 
