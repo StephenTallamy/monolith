@@ -126,26 +126,31 @@ write_line('<DecentSampler pluginVersion="1">')
 write_line('  <groups>')
 local groups = { notes={}, rt={}, pedal={} }
 local num_groups_per_file = 9
+if monolith.flavour == 'MVP' then
+    num_groups_per_file = 5
+end
 for i,sample_file in pairs(monolith.files) do
     local prefix = monolith.prefix[i]
     process_layer(sample_file, prefix, 'F', false)
     table.insert(groups.notes, (i - 1) * num_groups_per_file + 0)
     process_layer(sample_file, prefix, 'F', true)
     table.insert(groups.notes, (i - 1) * num_groups_per_file + 1)
-    process_layer(sample_file, prefix, 'MF', false)
-    table.insert(groups.notes, (i - 1) * num_groups_per_file + 2)
-    process_layer(sample_file, prefix, 'MF', true)
-    table.insert(groups.notes, (i - 1) * num_groups_per_file + 3)
-    process_layer(sample_file, prefix, 'P', false)
-    table.insert(groups.notes, (i - 1) * num_groups_per_file + 4)
-    process_layer(sample_file, prefix, 'P', true)
-    table.insert(groups.notes, (i - 1) * num_groups_per_file + 5)
     process_layer(sample_file, prefix, 'RT')
-    table.insert(groups.rt,    (i - 1) * num_groups_per_file + 6)
-    process_layer(sample_file, prefix, 'PEDAL_UP')
-    table.insert(groups.pedal, (i - 1) * num_groups_per_file + 7)
-    process_layer(sample_file, prefix, 'PEDAL_DOWN')
-    table.insert(groups.pedal, (i - 1) * num_groups_per_file + 8)
+    table.insert(groups.rt,    (i - 1) * num_groups_per_file + 2)
+    process_layer(sample_file, prefix, 'MF', false)
+    table.insert(groups.notes, (i - 1) * num_groups_per_file + 3)
+    process_layer(sample_file, prefix, 'MF', true)
+    table.insert(groups.notes, (i - 1) * num_groups_per_file + 4)
+    if monolith.flavour ~= 'MVP' then
+        process_layer(sample_file, prefix, 'P', false)
+        table.insert(groups.notes, (i - 1) * num_groups_per_file + 5)
+        process_layer(sample_file, prefix, 'P', true)
+        table.insert(groups.notes, (i - 1) * num_groups_per_file + 6)
+        process_layer(sample_file, prefix, 'PEDAL_UP')
+        table.insert(groups.pedal, (i - 1) * num_groups_per_file + 7)
+        process_layer(sample_file, prefix, 'PEDAL_DOWN')
+        table.insert(groups.pedal, (i - 1) * num_groups_per_file + 8)
+    end
 end
 write_line('  </groups>')
 write_line('  <ui bgImage="Resources/pictures/background.png" width="812" height="375" layoutMode="relative" bgMode="top_left">')

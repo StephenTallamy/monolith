@@ -114,6 +114,24 @@ monolith = {
             layer_map['MF']['start_bar'] = layer_map['MF']['start_bar_pedal']
             layer_map['P']['start_bar']  = layer_map['P']['start_bar_pedal']
         end
+
+        if monolith.flavour == 'MVP' then
+            monolith.max_rr = 1
+            monolith.num_pedal_rr = 1
+            monolith.note_interval = 7
+            monolith.min_note = 24
+            monolith.num_zones = 12
+            layer_map['F']['vol_low'] = 96
+            layer_map['MF']['vol_low'] = 0
+            layer_map['MF']['vol_high'] = 95
+            layer_map['F']['start_bar_pedal'] = 5
+            layer_map['RT']['start_bar_pedal'] = 95
+            layer_map['MF']['start_bar_pedal'] = 135
+            layer_map['F']['start_bar']  = layer_map['F']['start_bar_pedal']
+            layer_map['RT']['start_bar'] = layer_map['RT']['start_bar_pedal']
+            layer_map['MF']['start_bar'] = layer_map['MF']['start_bar_pedal']
+            layer_map['P'] = nil
+        end
     end,
 
     get_layer_info = function(layer)
@@ -175,7 +193,7 @@ monolith = {
     end,
 
     get_num_rr = function (note_number, layer)
-        if     layer == 'RT' or layer == 'F' then return 1
+        if     layer == 'RT' or layer == 'F' or monolith.flavour == 'MVP' then return 1
         elseif monolith.flavour == 'GIMP' then return monolith.get_num_rr_v1(note_number, layer)
         else   return monolith.get_num_rr_v2(note_number, layer)
         end

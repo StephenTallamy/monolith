@@ -179,13 +179,15 @@ for i,sample_file in pairs(monolith.files) do
     local prefix = monolith.prefix[i]
     process_layer(sample_file, prefix, 'F', false)
     process_layer(sample_file, prefix, 'F', true)
+    process_layer(sample_file, prefix, 'RT')
     process_layer(sample_file, prefix, 'MF', false)
     process_layer(sample_file, prefix, 'MF', true)
-    process_layer(sample_file, prefix, 'P', false)
-    process_layer(sample_file, prefix, 'P', true)
-    process_layer(sample_file, prefix, 'RT')
-    process_layer(sample_file, prefix, 'PEDAL_UP')
-    process_layer(sample_file, prefix, 'PEDAL_DOWN')
+    if monolith.flavour ~= 'MVP' then
+        process_layer(sample_file, prefix, 'P', false)
+        process_layer(sample_file, prefix, 'P', true)
+        process_layer(sample_file, prefix, 'PEDAL_UP')
+        process_layer(sample_file, prefix, 'PEDAL_DOWN')
+    end
 end
 file:close()
 
