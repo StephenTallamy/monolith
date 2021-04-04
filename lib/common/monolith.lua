@@ -51,6 +51,7 @@ monolith = {
     files           = {},
     prefix          = {},
     using_split     = false,
+    detailed_naming = false,
     rt_boost_db     = 20,
     pedal_boost_db  = 5,
 
@@ -92,6 +93,10 @@ monolith = {
 
         if config.using_split then
             monolith.using_split = config.using_split
+        end
+
+        if config.detailed_naming then
+            monolith.detailed_naming = config.detailed_naming
         end
 
         if monolith.flavour == 'GIMP' then
@@ -209,7 +214,13 @@ monolith = {
     end,
 
     get_file_name  = function (file_prefix, layer, root, note_low, note_high, vol_low, vol_high, rr, pedal)
-        local sample_file = file_prefix.."_r"..root..'_lk'..note_low..'_hk'..note_high..'_lv'..vol_low..'_hv'..vol_high.."_rr"..rr
+        local sample_file = file_prefix
+        if monolith.detailed_naming == true then
+            sample_file = sample_file.."_r"..root..'_lk'..note_low..'_hk'..note_high..'_lv'..vol_low..'_hv'..vol_high.."_rr"..rr
+        else
+            sample_file = sample_file.."_"..monolith.get_note_name(root).."_rr"..rr
+        end
+
         if layer == 'RT' then
             sample_file = sample_file .. "_rt" 
         elseif layer == 'PEDAL_UP' then
