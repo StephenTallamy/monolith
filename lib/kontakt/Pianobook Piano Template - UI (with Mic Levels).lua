@@ -14,6 +14,45 @@ get_declare(note_groups, "note_groups"),
 get_declare(release_trigger_groups, "release_trigger_groups"), 
 get_declare(pedal_groups, "pedal_groups"))
 
+local mic_declares = ""
+local mic_on = ""
+local mic_cases = ""
+local mic_spacing = 45
+local mic_position = 122
+if num_mics > 3 then
+    mic_position = mic_position - (num_mics - 3) * mic_spacing 
+end
+
+for i=1,num_mics do
+    mic_declares = mic_declares .. string.format([[
+
+    declare ui_slider $Mic%sSlider(1, 6300)
+    set_knob_defval($Mic%sSlider, 6300)
+    $Mic%sSlider := 6300
+    make_persistent($Mic%sSlider)
+    declare $Mic%sSliderId
+    $Mic%sSliderId := get_ui_id($Mic%sSlider)
+    set_control_par_str($Mic%sSliderId, $CONTROL_PAR_PICTURE, "Vertical_Slider")
+    set_control_par($Mic%sSliderId,$CONTROL_PAR_MOUSE_BEHAVIOUR, $controlSensitivity)
+    move_control_px($Mic%sSlider, %s, 155)
+]],i,i,i,i,i,i,i,i,i,i,mic_position)
+
+    mic_on = mic_on .. string.format([[
+
+on ui_control($Mic%sSlider)
+    $VolLevel := $Mic%sSlider * $Vol
+    set_engine_par($ENGINE_PAR_VOLUME, $VolLevel, -1, -1, $NI_BUS_OFFSET + %s)
+end on
+]],i,i,i-1)
+
+    mic_cases = mic_cases .. string.format([[
+            case %s
+                $VolLevel := $Mic%sSlider * $Vol
+]],i-1,i)
+
+    mic_position = mic_position + mic_spacing
+end
+
 ui_script = [[{
 
   PIANOBOOK PIANO TEMPLATE - UI SCRIPT (WITH MIC LEVEL SLIDERS)
@@ -70,38 +109,8 @@ on init
     { This variable will be used for setting volumes in the knob handlers below. }
     declare $count
 
-    { Declare top row of controls. These control volumes for the three busses. }
-    declare ui_slider $MicOneSlider(1, 6300)
-    set_knob_defval($MicOneSlider, 6300)
-    $MicOneSlider := 6300
-    make_persistent($MicOneSlider)
-    declare $MicOneSliderId
-    $MicOneSliderId := get_ui_id($MicOneSlider)
-    set_control_par_str($MicOneSliderId, $CONTROL_PAR_PICTURE, "Vertical_Slider")
-    set_control_par($MicOneSliderId,$CONTROL_PAR_MOUSE_BEHAVIOUR, $controlSensitivity)
-
-    declare ui_slider $MicTwoSlider(1, 6300)
-    set_knob_defval($MicTwoSlider, 6300)
-    $MicTwoSlider := 6300
-    make_persistent($MicTwoSlider)
-    declare $MicTwoSliderId
-    $MicTwoSliderId := get_ui_id($MicTwoSlider)
-    set_control_par_str($MicTwoSliderId, $CONTROL_PAR_PICTURE, "Vertical_Slider")
-    set_control_par($MicTwoSliderId,$CONTROL_PAR_MOUSE_BEHAVIOUR, $controlSensitivity)
-
-    declare ui_slider $MicThreeSlider(1, 6300)
-    set_knob_defval($MicThreeSlider, 6300)
-    $MicThreeSlider := 6300
-    make_persistent($MicThreeSlider)
-    declare $MicThreeSliderId
-    $MicThreeSliderId := get_ui_id($MicThreeSlider)
-    set_control_par_str($MicThreeSliderId, $CONTROL_PAR_PICTURE, "Vertical_Slider")
-    set_control_par($MicThreeSliderId,$CONTROL_PAR_MOUSE_BEHAVIOUR, $controlSensitivity)
-
-    { Positions the top row of controls }
-    move_control_px($MicOneSlider,  122, 155)
-    move_control_px($MicTwoSlider,  167, 155)
-    move_control_px($MicThreeSlider,212, 155)
+    { Declare top row of controls. These control volumes for the busses. }
+]]..mic_declares..[[
 
     { Declare knobs for the middle row of controls }
     declare ui_slider $NotesSlider(1, 630000)
@@ -172,24 +181,7 @@ on init
     declare $VolLevel
 
 end on
-
-on ui_control($MicOneSlider)
-    { Sets the volume of the `Group 1` bus. }
-    $VolLevel := $MicOneSlider * $Vol
-    set_engine_par($ENGINE_PAR_VOLUME, $VolLevel, -1, -1, $NI_BUS_OFFSET + 0)
-end on
-
-on ui_control($MicTwoSlider)
-    { Sets the volume of the `Group 2` bus. }
-    $VolLevel := $MicTwoSlider * $Vol
-    set_engine_par($ENGINE_PAR_VOLUME, $VolLevel, -1, -1, $NI_BUS_OFFSET + 1)
-end on
-
-on ui_control($MicThreeSlider)
-    { Sets the volume of the `Group 3` bus. }
-    $VolLevel := $MicThreeSlider * $Vol
-    set_engine_par($ENGINE_PAR_VOLUME, $VolLevel, -1, -1, $NI_BUS_OFFSET + 2)
-end on
+]]..mic_on..[[
 
 on ui_control($NotesSlider)
     { Sets the volume of the `Notes` groups. }
@@ -221,14 +213,9 @@ end on
 on ui_control($Vol)
     { This loops through all groups and sets their volume according to the $Vol knob. }
     $count := 0
-    while ($count < 3)
+    while ($count < $NUM_MICS)
         select ($count)
-            case 0
-                $VolLevel := $MicOneSlider * $Vol
-            case 1
-                $VolLevel := $MicTwoSlider * $Vol
-            case 2
-                $VolLevel := $MicThreeSlider * $Vol 
+]]..mic_cases..[[
         end select
         set_engine_par($ENGINE_PAR_VOLUME, $VolLevel, -1, -1, $NI_BUS_OFFSET + $count)
         inc($count)
