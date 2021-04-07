@@ -152,8 +152,14 @@ for i,sample_file in pairs(monolith.files) do
         table.insert(groups.pedal, (i - 1) * num_groups_per_file + 8)
     end
 end
+
+local ui_skin = "background"
+if config.ui_skin_ds then
+    ui_skin = config.ui_skin_ds
+end
+
 write_line('  </groups>')
-write_line('  <ui bgImage="Resources/pictures/background.png" width="812" height="375" layoutMode="relative" bgMode="top_left">')
+write_line('  <ui bgImage="Resources/pictures/'..ui_skin..'.png" width="812" height="375" layoutMode="relative" bgMode="top_left">')
 write_line('    <tab name="main">')
 write_line('      <labeled-knob x="231" y="80" label="NOTES" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="100" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
 for i,group in pairs(groups.notes) do

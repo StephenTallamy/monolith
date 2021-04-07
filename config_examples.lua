@@ -18,28 +18,36 @@ ClaustrophobicMIX456={
     instrument="Claustrophobic Piano (MIX456)",
     prefix="MIX456",
     filepath="samples/Claustrophobic Piano Mix 756_NR.wav",
-    flavour="SAME_PEDALS"
+    flavour="SAME_PEDALS",
+    ui_skin_kontakt="Claustrophobic_Piano",
+    ui_skin_ds="Claustrophobic_Piano_DS"
 }
 
 ClaustrophobicKU100={ 
     instrument="Claustrophobic Piano (KU100)",
     prefix="KU100",
     filepath="samples/Claustrophobic Piano KU 100_NR.wav",
-     flavour="SAME_PEDALS"
+     flavour="SAME_PEDALS",
+     ui_skin_kontakt="Claustrophobic_Piano",
+     ui_skin_ds="Claustrophobic_Piano_DS"
 }
 
 ClaustrophobicM149={ 
     instrument="Claustrophobic Piano (M149)",
     prefix="M149",
     filepath="samples/Claustrophobic Piano M149_NR.wav",
-    flavour="SAME_PEDALS"
+    flavour="SAME_PEDALS",
+    ui_skin_kontakt="Claustrophobic_Piano",
+    ui_skin_ds="Claustrophobic_Piano_DS"
 }
 
 ClaustrophobicPiano={ 
     instrument="Claustrophobic Piano",
     prefix={"KU100", "M149", "MIX456"},
     filepath={"samples/Claustrophobic Piano KU 100_NR.wav","samples/Claustrophobic Piano M149_NR.wav","samples/Claustrophobic Piano Mix 756_NR.wav"},
-    flavour="SAME_PEDALS"
+    flavour="SAME_PEDALS",
+    ui_skin_kontakt="Claustrophobic_Piano_3Mics",
+    ui_skin_ds="Claustrophobic_Piano_DS"
 }
 
 FamilyGrand={ 

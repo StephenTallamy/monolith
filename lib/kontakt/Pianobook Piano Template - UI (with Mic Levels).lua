@@ -15,6 +15,10 @@ get_declare(release_trigger_groups, "release_trigger_groups"),
 get_declare(pedal_groups, "pedal_groups"))
 
 local skin = "Template_Skin_" .. num_mics .. "Mics"
+if ui_skin then
+    skin = ui_skin
+end
+
 local mic_declares = ""
 local mic_on = ""
 local mic_cases = ""

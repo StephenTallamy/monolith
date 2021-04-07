@@ -14,6 +14,11 @@ get_declare(note_groups, "note_groups"),
 get_declare(release_trigger_groups, "release_trigger_groups"), 
 get_declare(pedal_groups, "pedal_groups"))
 
+local skin = "Template_Skin"
+if ui_skin then
+    skin = ui_skin
+end
+
 ui_script = [[{ 
 
   PIANOBOOK PIANO TEMPLATE - UI SCRIPT 
@@ -64,7 +69,7 @@ on init
     set_ui_width_px(633)
 
     set_control_par_str($INST_ICON_ID,$CONTROL_PAR_PICTURE,"BLANK_ICON")
-    set_control_par_str($INST_WALLPAPER_ID,$CONTROL_PAR_PICTURE,"Template_Skin")
+    set_control_par_str($INST_WALLPAPER_ID,$CONTROL_PAR_PICTURE,"]]..skin..[[")
 
     { This variable will be used for setting volumes in the knob handlers below. }
     declare $count
