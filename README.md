@@ -120,6 +120,7 @@ If you would like to create your own Template.nki the following steps can be use
 8. In the "Resource Container" click the folder icon and browse for the
    `Resources.nkr` file that is in the instruments folder
 9. Edit any of the Group 0 setting such as envelope, velocity curves, etc
+10. Add two FX to the Instrument Send FX section for FX1 and FX2 to control
 
 #### KSP Scripts
 

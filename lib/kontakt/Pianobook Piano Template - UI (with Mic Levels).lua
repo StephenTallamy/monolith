@@ -227,10 +227,10 @@ on ui_control($Vol)
 end on
 
 on ui_control($FxOne)
-    set_engine_par($ENGINE_PAR_CUTOFF, $FxOne, -1,0,1)
+    set_engine_par($ENGINE_PAR_SENDLEVEL_0, $FxOne,-1,7 ,0)
 end on 
 
 on ui_control($FxTwo)
-    set_engine_par($ENGINE_PAR_SENDLEVEL_0, $FxTwo,-1,7 ,0)
+    set_engine_par($ENGINE_PAR_SENDLEVEL_1, $FxTwo,-1,7 ,0)
 end on
 ]]
