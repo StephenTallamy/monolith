@@ -161,12 +161,12 @@ end
 write_line('  </groups>')
 write_line('  <ui bgImage="Resources/pictures/'..ui_skin..'.png" width="812" height="375" layoutMode="relative" bgMode="top_left">')
 write_line('    <tab name="main">')
-write_line('      <labeled-knob x="231" y="80" label="NOTES" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="100" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+write_line('      <labeled-knob x="271" y="80" label="NOTES" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="100" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
 for i,group in pairs(groups.notes) do
     write_line('        <binding type="amp" level="group" position="'..group..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0"  />')
 end
 write_line('      </labeled-knob>')
-write_line('      <labeled-knob x="351" y="80" label="RT" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="60" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+write_line('      <labeled-knob x="371" y="80" label="RT" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="60" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
 for i,group in pairs(groups.rt) do
     write_line('        <binding type="amp" level="group" position="'..group..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0"  />')
 end
@@ -176,8 +176,17 @@ for i,group in pairs(groups.pedal) do
     write_line('        <binding type="amp" level="group" position="'..group..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0"  />')
 end
 write_line('      </labeled-knob>')
+write_line('      <labeled-knob x="571" y="80" label="FX1" type="percent" minValue="0" maxValue="100" textColor="FFFFFFFF" value="0" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+write_line('        <binding type="effect" level="instrument" position="0" parameter="FX_REVERB_WET_LEVEL" factor="0.01"/>')
+write_line('      </labeled-knob>')
+write_line('      <labeled-knob x="671" y="80" label="FX2" type="percent" minValue="0" maxValue="100" textColor="FFFFFFFF" value="70" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+write_line('        <binding type="effect" level="instrument" position="0" parameter="FX_REVERB_ROOM_SIZE" factor="0.01"/>')
+write_line('      </labeled-knob>')
 write_line('    </tab>')
 write_line('  </ui>')
+write_line('  <effects>')
+write_line('    <effect type="reverb" wetLevel="0" roomSize="0.7"/>')
+write_line('  </effects>')
 write_line('</DecentSampler>')
 
 file:close()
