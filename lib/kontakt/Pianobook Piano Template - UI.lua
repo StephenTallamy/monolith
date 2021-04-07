@@ -47,7 +47,6 @@ on init
     declare $i
     while ($bus < $NUM_MICS)
         $i := 0
-        message($group)
         while ($i < $NUM_GROUPS_PER_MIC)
             set_engine_par($ENGINE_PAR_OUTPUT_CHANNEL, $NI_BUS_OFFSET + $bus, $group, -1, -1)
             inc($group)
@@ -113,7 +112,7 @@ on init
     set_control_par_str($VolId, $CONTROL_PAR_PICTURE, "ARC_Knob")
     set_control_par($VolId,$CONTROL_PAR_MOUSE_BEHAVIOUR,$controlSensitivity)
 
-    declare ui_slider $FxOne(1, 1000000)
+    declare ui_slider $FxOne(0, 1000000)
     $FxOne := 0
     set_knob_defval($FxOne, 0)
     make_persistent($FxOne)
@@ -122,7 +121,7 @@ on init
     set_control_par_str($FxOneId, $CONTROL_PAR_PICTURE, "ARC_Knob")
     set_control_par($FxOneId,$CONTROL_PAR_MOUSE_BEHAVIOUR,$controlSensitivity)
 
-    declare ui_slider $FxTwo(1, 500000)
+    declare ui_slider $FxTwo(0, 500000)
     $FxTwo := 0
     set_knob_defval($FxTwo, 0)
     make_persistent($FxTwo)
