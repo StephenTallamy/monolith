@@ -218,7 +218,7 @@ monolith = {
         if monolith.detailed_naming == true then
             sample_file = sample_file.."_r"..root..'_lk'..note_low..'_hk'..note_high..'_lv'..vol_low..'_hv'..vol_high.."_rr"..rr
         else
-            sample_file = sample_file.."_"..monolith.get_note_name(root).."_rr"..rr
+            sample_file = sample_file.."_"..layer.."_"..monolith.get_note_name(root).."_rr"..rr
         end
 
         if layer == 'RT' then
