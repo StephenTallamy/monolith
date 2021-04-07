@@ -114,7 +114,7 @@ on init
     set_ui_width_px(633)
 
     set_control_par_str($INST_ICON_ID,$CONTROL_PAR_PICTURE,"BLANK_ICON")
-    set_control_par_str($INST_WALLPAPER_ID,$CONTROL_PAR_PICTURE,"Template_Skin_with_Mic_Levels")
+    set_control_par_str($INST_WALLPAPER_ID,$CONTROL_PAR_PICTURE,"Template_Skin")
 
     { This variable will be used for setting volumes in the knob handlers below. }
     declare $count

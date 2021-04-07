@@ -99,9 +99,9 @@ on init
     set_control_par($PedalsSliderId,$CONTROL_PAR_MOUSE_BEHAVIOUR, $controlSensitivity)
 
     { Positions the top row of controls }
-    move_control_px($NotesSlider,  195,95)
-    move_control_px($RTSlider,     295,95)
-    move_control_px($PedalsSlider, 395,95)
+    move_control_px($NotesSlider,  295, 95)
+    move_control_px($RTSlider,     395, 95)
+    move_control_px($PedalsSlider, 495, 95)
 
     { Declare knobs for the bottom row of controls }
     declare ui_slider $Vol(0, 100)
@@ -132,9 +132,9 @@ on init
     set_control_par($FxTwoId,$CONTROL_PAR_MOUSE_BEHAVIOUR,$controlSensitivity)
 
     { Positions the bottom row of controls }
-    move_control_px($Vol,   195, 195)
-    move_control_px($FxOne, 295, 195)
-    move_control_px($FxTwo, 395, 195)
+    move_control_px($Vol,   295, 195)
+    move_control_px($FxOne, 395, 195)
+    move_control_px($FxTwo, 495, 195)
 
     declare $VolLevel
 
