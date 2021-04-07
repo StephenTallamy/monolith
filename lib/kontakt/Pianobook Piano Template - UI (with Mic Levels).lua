@@ -24,18 +24,28 @@ if num_mics > 3 then
 end
 
 for i=1,num_mics do
-    mic_declares = mic_declares .. string.format([[
+    mic_declares = mic_declares .. string.format(string.gsub([[
 
-    declare ui_slider $Mic%sSlider(1, 6300)
-    set_knob_defval($Mic%sSlider, 6300)
-    $Mic%sSlider := 6300
-    make_persistent($Mic%sSlider)
-    declare $Mic%sSliderId
-    $Mic%sSliderId := get_ui_id($Mic%sSlider)
-    set_control_par_str($Mic%sSliderId, $CONTROL_PAR_PICTURE, "Vertical_Slider")
-    set_control_par($Mic%sSliderId,$CONTROL_PAR_MOUSE_BEHAVIOUR, $controlSensitivity)
-    move_control_px($Mic%sSlider, %s, 155)
-]],i,i,i,i,i,i,i,i,i,i,mic_position)
+    declare ui_slider $MicXSlider(1, 6300)
+    set_knob_defval($MicXSlider, 6300)
+    $MicXSlider := 6300
+    make_persistent($MicXSlider)
+    declare $MicXSliderId
+    $MicXSliderId := get_ui_id($MicXSlider)
+    set_control_par_str($MicXSliderId, $CONTROL_PAR_PICTURE, "Vertical_Slider")
+    set_control_par($MicXSliderId,$CONTROL_PAR_MOUSE_BEHAVIOUR, $controlSensitivity)
+    move_control_px($MicXSlider, %s, 155)
+
+    declare ui_label $MicXLabel (1,1)
+    set_text ($MicXLabel,"%s")
+    declare $MicXLabelId
+    $MicXLabelId := get_ui_id($MicXLabel)
+    set_control_par($MicXLabelId,$CONTROL_PAR_TEXT_ALIGNMENT,1)
+    set_control_par($MicXLabelId,$CONTROL_PAR_FONT_TYPE,1)
+    set_control_par($MicXLabelId,$CONTROL_PAR_WIDTH,45)
+    set_control_par($MicXLabelId,$CONTROL_PAR_HEIGHT,16)
+    move_control_px($MicXLabel, %s, 131)
+]],"MicX", "Mic"..i), mic_position, "MIC "..i, mic_position - 18)
 
     mic_on = mic_on .. string.format([[
 
