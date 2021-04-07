@@ -14,6 +14,7 @@ get_declare(note_groups, "note_groups"),
 get_declare(release_trigger_groups, "release_trigger_groups"), 
 get_declare(pedal_groups, "pedal_groups"))
 
+local skin = "Template_Skin_" .. num_mics .. "Mics"
 local mic_declares = ""
 local mic_on = ""
 local mic_cases = ""
@@ -35,17 +36,7 @@ for i=1,num_mics do
     set_control_par_str($MicXSliderId, $CONTROL_PAR_PICTURE, "Vertical_Slider")
     set_control_par($MicXSliderId,$CONTROL_PAR_MOUSE_BEHAVIOUR, $controlSensitivity)
     move_control_px($MicXSlider, %s, 155)
-
-    declare ui_label $MicXLabel (1,1)
-    set_text ($MicXLabel,"%s")
-    declare $MicXLabelId
-    $MicXLabelId := get_ui_id($MicXLabel)
-    set_control_par($MicXLabelId,$CONTROL_PAR_TEXT_ALIGNMENT,1)
-    set_control_par($MicXLabelId,$CONTROL_PAR_FONT_TYPE,1)
-    set_control_par($MicXLabelId,$CONTROL_PAR_WIDTH,45)
-    set_control_par($MicXLabelId,$CONTROL_PAR_HEIGHT,16)
-    move_control_px($MicXLabel, %s, 131)
-]],"MicX", "Mic"..i), mic_position, "MIC "..i, mic_position - 18)
+]],"MicX", "Mic"..i), mic_position)
 
     mic_on = mic_on .. string.format([[
 
@@ -113,7 +104,7 @@ on init
     set_ui_width_px(633)
 
     set_control_par_str($INST_ICON_ID,$CONTROL_PAR_PICTURE,"BLANK_ICON")
-    set_control_par_str($INST_WALLPAPER_ID,$CONTROL_PAR_PICTURE,"Template_Skin")
+    set_control_par_str($INST_WALLPAPER_ID,$CONTROL_PAR_PICTURE,"]]..skin..[[")
 
     { This variable will be used for setting volumes in the knob handlers below. }
     declare $count
