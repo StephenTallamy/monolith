@@ -75,6 +75,8 @@ on init
     declare $release_trigger_last_rr := 0
     declare $pedal_down_last_rr := 0
     declare $pedal_up_last_rr := 0
+    declare %notes_playing[128]
+
 end on
 
 function func_play_note
@@ -136,6 +138,15 @@ function func_play_note
 
     $tmp_note_id := play_note($func_play_note_midi_note, $func_play_note_velocity, 0, -1) 
     set_event_par_arr($tmp_note_id,$EVENT_PAR_ALLOW_GROUP,0,$ALL_GROUPS)
+
+    if($func_play_note_type = 1)
+        if (%notes_playing[$func_play_note_midi_note] > 0)
+            fade_out(%notes_playing[$func_play_note_midi_note], 20000, 1)
+        end if
+        %notes_playing[$func_play_note_midi_note] := $tmp_note_id
+    end if
+
+    { message("RR: " & $tmp_rr) }
 
     select($func_play_note_type)
         case 1
