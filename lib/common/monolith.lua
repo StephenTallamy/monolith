@@ -105,6 +105,10 @@ monolith = {
             monolith.detailed_naming = config.detailed_naming
         end
 
+        if config.adsr then
+            monolith.adsr = config.adsr
+        end
+
         if monolith.flavour == 'GIMP' then
             layer_map['F']['start_bar']        = 5
             layer_map['F']['start_bar_pedal']  = 1266

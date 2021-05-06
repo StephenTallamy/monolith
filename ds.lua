@@ -130,6 +130,7 @@ write_line('<DecentSampler pluginVersion="1">')
 write_line('  <groups>')
 local groups = { notes={}, rt={}, pedal={} }
 local num_groups_per_file = 9
+local num_mics = #monolith.files
 if monolith.flavour == 'MVP' then
     num_groups_per_file = 5
 end
@@ -186,13 +187,15 @@ write_line('      </labeled-knob>')
 write_line('      <labeled-knob x="671" y="80" label="FX2" type="percent" minValue="0" maxValue="100" textColor="FFFFFFFF" value="70" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
 write_line('        <binding type="effect" level="instrument" position="0" parameter="FX_REVERB_ROOM_SIZE" factor="0.01"/>')
 write_line('      </labeled-knob>')
-local x_pos = 40
-for i,prefix in pairs(monolith.prefix) do
-    x_pos = x_pos + 60
-    write_line('      <label x="'..(x_pos - 45)..'" y="80" width="110" height="30" text="'..prefix:upper()..'" textColor="FFFFFFFF" textSize="15" />')
-    write_line('      <control x="'..x_pos..'" y="115" parameterName="'..prefix..'" style="linear_bar_vertical" type="float" minValue="0" maxValue="100" value="60" width="20" height="70" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
-    write_line('        <binding type="amp" level="tag" identifier="MIC_'..prefix..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0" />')
-    write_line('      </control>')
+if num_mics > 1 then
+    local x_pos = 40
+    for i,prefix in pairs(monolith.prefix) do
+        x_pos = x_pos + 60
+        write_line('      <label x="'..(x_pos - 45)..'" y="80" width="110" height="30" text="'..prefix:upper()..'" textColor="FFFFFFFF" textSize="15" />')
+        write_line('      <control x="'..x_pos..'" y="115" parameterName="'..prefix..'" style="linear_bar_vertical" type="float" minValue="0" maxValue="100" value="60" width="20" height="70" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+        write_line('        <binding type="amp" level="tag" identifier="MIC_'..prefix..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0" />')
+        write_line('      </control>')
+    end
 end
 write_line('    </tab>')
 write_line('  </ui>')
