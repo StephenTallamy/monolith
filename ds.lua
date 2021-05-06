@@ -44,13 +44,16 @@ function process_layer(file_path, prefix, layer, pedal)
     if pedal == true then
         bar_in = layer_info['start_bar_pedal']
     end
-    
+
+    local group_tags = 'MIC_'..prefix
     local group_label
     if layer == 'RT' then
         group_label = prefix..' release_triggers'
-        write_line('    <group trigger="release" name="'..group_label..'" volume="'..monolith.rt_boost_db..'dB">')
+        group_tags = group_tags..',RT'
+        write_line('    <group trigger="release" name="'..group_label..'" volume="'..monolith.rt_boost_db..'dB" tags="'..group_tags..'">')
     elseif (layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN') then
         group_label = prefix..' '..layer:lower()
+        group_tags = group_tags..',PEDALS'
         local locc64
         local hicc64
         if (layer == 'PEDAL_DOWN') then
@@ -60,9 +63,10 @@ function process_layer(file_path, prefix, layer, pedal)
             locc64=0 
             hicc64=63
         end
-        write_line('    <group trigger="cc" name="'..group_label..'" onLoCC64="'..locc64..'" onHiCC64="'..hicc64..'" volume="'..monolith.pedal_boost_db..'dB">')
+        write_line('    <group trigger="cc" name="'..group_label..'" onLoCC64="'..locc64..'" onHiCC64="'..hicc64..'" volume="'..monolith.pedal_boost_db..'dB" tags="'..group_tags..'">')
     else
         group_label = prefix..' '..layer
+        group_tags = group_tags..',NOTES'
         local locc64
         local hicc64
         if (pedal) then
@@ -74,7 +78,7 @@ function process_layer(file_path, prefix, layer, pedal)
             hicc64=63
             group_label = group_label .. ' notes_without_pedal'
         end
-        write_line('    <group name="'..group_label..'" loCC64="'..locc64..'" hiCC64="'..hicc64..'">')
+        write_line('    <group name="'..group_label..'" loCC64="'..locc64..'" hiCC64="'..hicc64..'" tags="'..group_tags..'" attack="'..monolith.adsr.attack..'" decay="'..monolith.adsr.decay..'" sustain="'..monolith.adsr.sustain..'" release="'..monolith.adsr.release..'">')
     end
     
     local file_prefix = string.sub(file_path, 0, -5)
@@ -182,6 +186,14 @@ write_line('      </labeled-knob>')
 write_line('      <labeled-knob x="671" y="80" label="FX2" type="percent" minValue="0" maxValue="100" textColor="FFFFFFFF" value="70" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
 write_line('        <binding type="effect" level="instrument" position="0" parameter="FX_REVERB_ROOM_SIZE" factor="0.01"/>')
 write_line('      </labeled-knob>')
+local x_pos = 40
+for i,prefix in pairs(monolith.prefix) do
+    x_pos = x_pos + 60
+    write_line('      <label x="'..(x_pos - 45)..'" y="80" width="110" height="30" text="'..prefix:upper()..'" textColor="FFFFFFFF" textSize="15" />')
+    write_line('      <control x="'..x_pos..'" y="115" parameterName="'..prefix..'" style="linear_bar_vertical" type="float" minValue="0" maxValue="100" value="60" width="20" height="70" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+    write_line('        <binding type="amp" level="tag" identifier="MIC_'..prefix..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0" />')
+    write_line('      </control>')
+end
 write_line('    </tab>')
 write_line('  </ui>')
 write_line('  <effects>')

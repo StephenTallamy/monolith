@@ -54,6 +54,12 @@ monolith = {
     detailed_naming = false,
     rt_boost_db     = 20,
     pedal_boost_db  = 5,
+    adsr = {
+        attack = 0,
+        decay = 32.8,
+        release = 0.405,
+        sustain = 0
+    },
 
     configure = function(config)       
         if config.flavour then
