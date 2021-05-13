@@ -189,6 +189,10 @@ write_line('        <binding type="effect" level="instrument" position="0" param
 write_line('      </labeled-knob>')
 if num_mics > 1 then
     local x_pos = 40
+    if num_mics > 3 then
+        x_pos = 0  
+    end
+
     for i,prefix in pairs(monolith.prefix) do
         x_pos = x_pos + 60
         write_line('      <label x="'..(x_pos - 45)..'" y="80" width="110" height="30" text="'..prefix:upper()..'" textColor="FFFFFFFF" textSize="15" />')

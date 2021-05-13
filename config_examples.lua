@@ -27,9 +27,9 @@ ClaustrophobicKU100={
     instrument="Claustrophobic Piano (KU100)",
     prefix="KU100",
     filepath="samples/Claustrophobic Piano KU 100_NR.wav",
-     flavour="SAME_PEDALS",
-     ui_skin_kontakt="Claustrophobic_Piano",
-     ui_skin_ds="Claustrophobic_Piano_DS"
+    flavour="SAME_PEDALS",
+    ui_skin_kontakt="Claustrophobic_Piano",
+    ui_skin_ds="Claustrophobic_Piano_DS"
 }
 
 ClaustrophobicM149={ 
@@ -48,6 +48,21 @@ ClaustrophobicPiano={
     flavour="SAME_PEDALS",
     ui_skin_kontakt="Claustrophobic_Piano_3Mics",
     ui_skin_ds="Claustrophobic_Piano_DS"
+}
+
+CoolPiano={ 
+    instrument="The Cool Piano",
+    prefix={"Pedals", "Tape", "Shallow"},
+    filepath={"samples/Claustrophobic Pedals.wav","samples/Claustrophobic Tape.wav","samples/Claustrophobic Shallow.wav"},
+    flavour="SAME_PEDALS",
+    ui_skin_kontakt="Cool_Piano",
+    ui_skin_ds="Cool_Piano_DS",
+    adsr = {
+        attack = 0.0014,
+        decay = 32.8,
+        release = 0.405,
+        sustain = 0
+    }
 }
 
 FamilyGrand={ 
