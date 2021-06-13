@@ -19,13 +19,17 @@ function copy_samples(note_name, bar_in, note_duration_bars, reader, sample_file
 
     reader.set_position(samples_in)
 
-    local samples = reader.get_samples_interlaced(samples_out - samples_in)
-    
     print(string.format("Note %3s Start %8d End %8d File %s", note_name, samples_in, samples_out, sample_file))
 
     local writer = wav.create_context(sample_file, "w")
     writer.init(num_channels, sample_rate, bitrate)
-    writer.write_samples_interlaced(samples)
+
+    local file_r = reader.get_file()
+    local file_w = writer.get_file()
+
+    local block_align = reader.get_block_align()
+    file_w:write(file_r:read((samples_out - samples_in) * block_align))
+
     writer.finish()
 end
 
@@ -57,7 +61,7 @@ function process_layer(reader, layer, pedal, num_channels, sample_rate, bitrate)
         for i=0,monolith.num_zones-1 do
             local note_name          = monolith.get_note_name(root)
             local num_rrs            = monolith.get_num_rr(root, layer)
-            local note_duration_bars = monolith.get_note_duration_bars(root, layer)
+            local note_duration_bars = monolith.get_note_duration_bars(root, layer, pedal)
             
             for rr=1,num_rrs do
                 local note_low = monolith.get_note_low(root)
@@ -93,6 +97,7 @@ for i,sample_file in pairs(files) do
     process_layer(reader, 'MF', true, num_channels, sample_rate, bitrate)
     if monolith.flavour ~= 'MVP' then
         process_layer(reader, 'P',  true, num_channels, sample_rate, bitrate)
+        process_layer(reader, 'RT', true, num_channels, sample_rate, bitrate)
         process_layer(reader, 'PEDAL_UP',  false, num_channels, sample_rate, bitrate)
         process_layer(reader, 'PEDAL_DOWN',false, num_channels, sample_rate, bitrate)
     end

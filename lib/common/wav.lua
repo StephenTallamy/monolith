@@ -399,6 +399,9 @@ wav = {
 			-- Return audio handler
 			local obj
 			obj = {
+				get_file = function()
+					return file
+				end,
 				get_filename = function()
 					return filename
 				end,
@@ -667,6 +670,9 @@ wav = {
 
 			-- Return audio handler
 			return {
+				get_file = function()
+					return file
+				end,
 				get_filename = function()
 					return filename
 				end,
