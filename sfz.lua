@@ -20,14 +20,14 @@ function write_line(line)
     file:write(line..'\n')
 end    
 
-function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, use_rr, vol_low, vol_high, file_prefix, pedal)
+function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration_bars, root, rr, num_rrs, vol_low, vol_high, file_prefix, pedal)
     local note_name    = monolith.get_note_name(root)
     local note_low     = monolith.get_note_low(root)
     
     write_line(string.format("// Note %s Group %s RR %d Bar In %d Bar Out %d", note_name, group_name, rr, note_bar_in, note_bar_out)) 
     write_line('<region>')
     if monolith.using_split then 
-        local sample_file = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, use_rr, pedal)
+        local sample_file = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, rr, pedal)
         write_line('sample='..sample_file)
     else
         local sample_start = monolith.get_samples(note_bar_in)
@@ -37,8 +37,11 @@ function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration
     end
     write_line('hikey=' .. root)
     write_line('lokey=' .. note_low)
-    write_line('pitch_keycenter=' .. root) 
-    write_line('seq_position=' .. rr)
+    write_line('pitch_keycenter=' .. root)
+    if num_rrs > 0 then
+        write_line('seq_position=' .. rr)
+        write_line('seq_length=' .. num_rrs)
+    end
     write_line('')
 end
 
@@ -115,17 +118,16 @@ function process_layer(sample_file, prefix, layer, pedal)
             write_line('volume='..note_volume)
             write_line('xfin_locc23=0')
             write_line('xfin_hicc23=127')
-            write_line('seq_length='..monolith.max_rr)
             group_label = layer
-            if (pedal) then
-                group_label = group_label .. ' note_with_pedal'
-                write_line('locc64=64') 
-                write_line('hicc64=127')
-            else
-                group_label = group_label .. ' note_without_pedal'
-                write_line('locc64=0') 
-                write_line('hicc64=63')
-            end
+        end
+        if (pedal) then
+            group_label = group_label .. ' note_with_pedal'
+            write_line('locc64=64') 
+            write_line('hicc64=127')
+        else
+            group_label = group_label .. ' note_without_pedal'
+            write_line('locc64=0') 
+            write_line('hicc64=63')
         end
         write_line('group_label='..prefix..' '..group_label)
         write_line('')
@@ -134,12 +136,11 @@ function process_layer(sample_file, prefix, layer, pedal)
             local num_rrs            = monolith.get_num_rr(root, layer)
             local note_duration_bars = monolith.get_note_duration_bars(root, layer)
             
-            for rr=1,monolith.max_rr do   
-                local use_rr       = (rr - 1) % num_rrs             
-                local note_bar_in  = bar_in + (use_rr * (note_duration_bars + 1))
+            for rr=1,num_rrs do   
+                local note_bar_in  = bar_in + (rr * (note_duration_bars + 1))
                 local note_bar_out = note_bar_in + note_duration_bars
 
-                create_zone(layer, layer, note_bar_in, note_bar_out, note_duration_bars, root, rr, use_rr + 1, vol_low, vol_high, file_prefix, pedal)
+                create_zone(layer, layer, note_bar_in, note_bar_out, note_duration_bars, root, rr, num_rrs, vol_low, vol_high, file_prefix, pedal)
                 
                 if layer == 'RT' then
                     break
@@ -185,6 +186,7 @@ for i,sample_file in pairs(monolith.files) do
     if monolith.flavour ~= 'MVP' then
         process_layer(sample_file, prefix, 'P', false)
         process_layer(sample_file, prefix, 'P', true)
+        process_layer(sample_file, prefix, 'RT', true)
         process_layer(sample_file, prefix, 'PEDAL_UP')
         process_layer(sample_file, prefix, 'PEDAL_DOWN')
     end

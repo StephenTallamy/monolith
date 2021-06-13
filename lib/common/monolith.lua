@@ -233,7 +233,8 @@ monolith = {
 
         if layer == 'RT' then
             sample_file = sample_file .. "_rt" 
-        elseif layer == 'PEDAL_UP' then
+        end
+        if layer == 'PEDAL_UP' then
             sample_file = sample_file .. "_pedal_up" 
         elseif layer == 'PEDAL_DOWN' then
             sample_file = sample_file .. "_pedal_down"             
