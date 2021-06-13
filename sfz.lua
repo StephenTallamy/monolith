@@ -108,6 +108,7 @@ function process_layer(sample_file, prefix, layer, pedal)
         if layer == 'RT' then
             write_line('volume='..rt_volume)
             write_line('trigger=release_key')
+            write_line('amp_velcurve_1=0.1')
             write_line('seq_length=1')
             write_line('xfin_locc24=0')
             write_line('xfin_hicc24=127')
@@ -118,6 +119,7 @@ function process_layer(sample_file, prefix, layer, pedal)
             write_line('volume='..note_volume)
             write_line('xfin_locc23=0')
             write_line('xfin_hicc23=127')
+            write_line('amp_velcurve_'..vol_high..'=1')
             group_label = layer
         end
         if (pedal) then
