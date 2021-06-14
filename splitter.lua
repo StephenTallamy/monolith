@@ -55,7 +55,7 @@ function process_layer(reader, layer, pedal, num_channels, sample_rate, bitrate)
         for rr=1,monolith.num_pedal_rr do
             local sample_file = monolith.get_file_name(file_prefix, layer, root, root, root, vol_low, vol_high, rr, pedal)
             copy_samples(layer, note_bar_in, note_duration_bars, reader, sample_file, num_channels, sample_rate, bitrate)
-            note_bar_in = note_bar_in + 6
+            note_bar_in = note_bar_in + monolith.get_bars_between_pedals()
         end 
     else 
         for i=0,monolith.num_zones-1 do
