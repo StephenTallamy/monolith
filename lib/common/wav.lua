@@ -660,14 +660,18 @@ wav = {
 						output[c] = channel_samples
 					end
 					return output
-				end
+				end,
+				read_raw_bytes = function(byte_count)
+					return file:read(byte_count)
+				end,
 			}
 			return obj
 		-- Initialize write process
 		else
 			-- Audio meta information
-			local channels_number_private, bytes_per_sample
+			local channels_number_private, bytes_per_sample, data_size
 
+			local data_chunksize_pos = 0
 			-- Return audio handler
 			return {
 				get_file = function()
@@ -705,10 +709,13 @@ wav = {
 								ntob(bits_per_sample, 2))
 
 					-- Write data chunk (so far)
-					file:write("data????")	-- data size to insert later
+					file:write("data")	-- data size to insert later
+					data_chunksize_pos = file:seek()
+					file:write("????")
 
 					-- Set format memory
 					channels_number_private, bytes_per_sample = channels_number, bits_per_sample / 8
+					data_size = 0
 				end,
 				write_samples_interlaced = function(samples)
 					-- Check function parameters
@@ -716,13 +723,14 @@ wav = {
 						error("Samples table expected!", 2)
 					end
 					local samples_n = #samples
+					local current_seek = file:seek()
 					if samples_n == 0 or samples_n % channels_number_private ~= 0 then
 						error("Valid number of samples expected (multiple of channels)!", 2)
 					-- Already finished?
 					elseif not file then
 						error("Already finished!", 2)
 					-- Already initialized?
-					elseif file:seek() == 0 then
+					elseif current_seek == 0 then
 						error("Initialize before writing samples!", 2)
 					end
 					-- All samples are numbers?
@@ -756,10 +764,12 @@ wav = {
 					end
 
 					-- Get data size
-					local data_size = file:seek()
-					-- Save data size
-					file:seek("set", 40)
-					file:write(ntob(data_size - 44, 4))
+					data_size = data_size + file:seek() - current_seek
+				end,
+				write_raw_bytes = function(data)
+					local current_seek = file:seek()
+					file:write(data)
+					data_size = data_size + file:seek() - current_seek
 				end,
 				write_smpl_chunk = function(manufacturer,product,srate,mroot,mpitch,smptef,smpteo,lnum,sdata,lcue,ltype,lstart,lend,lfraction,ltimes)
 					file:seek("end")
@@ -794,6 +804,10 @@ wav = {
 					-- Save file size
 					file:seek("set", 4)
 					file:write(ntob(file_size - 8, 4))
+
+					-- Save data size
+					file:seek("set", data_chunksize_pos)
+					file:write(ntob(data_size, 4))
 
 					-- Finalize file for secure reading
 					file:close()

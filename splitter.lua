@@ -24,11 +24,8 @@ function copy_samples(note_name, bar_in, note_duration_bars, reader, sample_file
     local writer = wav.create_context(sample_file, "w")
     writer.init(num_channels, sample_rate, bitrate)
 
-    local file_r = reader.get_file()
-    local file_w = writer.get_file()
-
     local block_align = reader.get_block_align()
-    file_w:write(file_r:read((samples_out - samples_in) * block_align))
+    writer.write_raw_bytes(reader.read_raw_bytes((samples_out - samples_in) * block_align))
 
     writer.finish()
 end
