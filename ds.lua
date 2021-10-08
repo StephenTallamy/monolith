@@ -37,6 +37,9 @@ end
 
 function process_layer(file_path, prefix, layer, pedal)
     local layer_info  = monolith.get_layer_info(layer)
+    if layer_info == nil then
+        return false
+    end
     local root        = monolith.start_note
     local bar_in      = layer_info['start_bar']
     local vol_low     = layer_info['vol_low']
@@ -120,9 +123,10 @@ function process_layer(file_path, prefix, layer, pedal)
 
             root   = root + monolith.note_interval
             bar_in = bar_in + ((note_duration_bars + 1) * num_rrs)
-        end      
+        end
     end
     write_line('    </group>')
+    return true
 end
 
 write_line('<?xml version="1.0" encoding="UTF-8"?>')
@@ -136,25 +140,42 @@ if monolith.flavour == 'MVP' then
 end
 for i,sample_file in pairs(monolith.files) do
     local prefix = monolith.prefix[i]
-    process_layer(sample_file, prefix, 'F', false)
-    table.insert(groups.notes, (i - 1) * num_groups_per_file + 0)
-    process_layer(sample_file, prefix, 'F', true)
-    table.insert(groups.notes, (i - 1) * num_groups_per_file + 1)
-    process_layer(sample_file, prefix, 'RT')
-    table.insert(groups.rt,    (i - 1) * num_groups_per_file + 2)
-    process_layer(sample_file, prefix, 'MF', false)
-    table.insert(groups.notes, (i - 1) * num_groups_per_file + 3)
-    process_layer(sample_file, prefix, 'MF', true)
-    table.insert(groups.notes, (i - 1) * num_groups_per_file + 4)
-    if monolith.flavour ~= 'MVP' then
-        process_layer(sample_file, prefix, 'P', false)
-        table.insert(groups.notes, (i - 1) * num_groups_per_file + 5)
-        process_layer(sample_file, prefix, 'P', true)
-        table.insert(groups.notes, (i - 1) * num_groups_per_file + 6)
-        process_layer(sample_file, prefix, 'PEDAL_UP')
-        table.insert(groups.pedal, (i - 1) * num_groups_per_file + 7)
-        process_layer(sample_file, prefix, 'PEDAL_DOWN')
-        table.insert(groups.pedal, (i - 1) * num_groups_per_file + 8)
+    local offset = 0
+    if process_layer(sample_file, prefix, 'F', false) then
+        table.insert(groups.notes, (i - 1) * num_groups_per_file + offset)
+        offset = offset + 1
+    end
+    if process_layer(sample_file, prefix, 'F', true) then
+        table.insert(groups.notes, (i - 1) * num_groups_per_file + offset)
+        offset = offset + 1
+    end
+    if process_layer(sample_file, prefix, 'RT') then
+        table.insert(groups.rt,    (i - 1) * num_groups_per_file + offset)
+        offset = offset + 1
+    end
+    if process_layer(sample_file, prefix, 'MF', false) then
+        table.insert(groups.notes, (i - 1) * num_groups_per_file + offset)
+        offset = offset + 1
+    end
+    if process_layer(sample_file, prefix, 'MF', true) then
+        table.insert(groups.notes, (i - 1) * num_groups_per_file + offset)
+        offset = offset + 1
+    end
+    if process_layer(sample_file, prefix, 'P', false) then
+        table.insert(groups.notes, (i - 1) * num_groups_per_file + offset)
+        offset = offset + 1
+    end
+    if process_layer(sample_file, prefix, 'P', true) then
+        table.insert(groups.notes, (i - 1) * num_groups_per_file + offset)
+        offset = offset + 1
+    end
+    if process_layer(sample_file, prefix, 'PEDAL_UP') then
+        table.insert(groups.pedal, (i - 1) * num_groups_per_file + offset)
+        offset = offset + 1
+    end
+    if process_layer(sample_file, prefix, 'PEDAL_DOWN') then
+        table.insert(groups.pedal, (i - 1) * num_groups_per_file + offset)
+        offset = offset + 1
     end
 end
 

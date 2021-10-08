@@ -38,22 +38,23 @@ local layer_map = {
 local note_map = {"C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"}
 
 monolith = {
-    max_rr          = 3,
-    num_pedal_rr    = 5,
-    num_zones       = 30,
-    note_interval   = 3,
-    min_note        = 21,
-    start_note      = 21,
-    flavour         = 'DEFAULT',
-    sample_rate     = 48000,
-    time_signature  = 4,
-    bpm             = 115.2,
-    files           = {},
-    prefix          = {},
-    using_split     = false,
-    detailed_naming = false,
-    rt_boost_db     = 20,
-    pedal_boost_db  = 5,
+    max_rr             = 3,
+    num_pedal_rr       = 5,
+    num_zones          = 30,
+    note_interval      = 3,
+    min_note           = 21,
+    start_note         = 21,
+    flavour            = 'DEFAULT',
+    sample_rate        = 48000,
+    time_signature     = 4,
+    bpm                = 115.2,
+    files              = {},
+    prefix             = {},
+    using_split        = false,
+    detailed_naming    = false,
+    rt_boost_db        = 20,
+    pedal_boost_db     = 5,
+    note_duration_bars = 7,
     adsr = {
         attack = 0,
         decay = 32.8,
@@ -83,31 +84,7 @@ monolith = {
                 local prefix = sample_file:match("([^/]*).wav$")
                 table.insert(monolith.prefix, prefix)
             end
-        end
-
-        if config.bpm then
-            monolith.bpm = config.bpm
-        end
-
-        if config.rt_boost_db then
-            monolith.rt_boost_db = config.rt_boost_db
-        end
-
-        if config.pedal_boost_db then
-            monolith.pedal_boost_db = config.pedal_boost_db
-        end
-
-        if config.using_split then
-            monolith.using_split = config.using_split
-        end
-
-        if config.detailed_naming then
-            monolith.detailed_naming = config.detailed_naming
-        end
-
-        if config.adsr then
-            monolith.adsr = config.adsr
-        end
+        end   
 
         if monolith.flavour == 'GIMP' then
             layer_map['F']['start_bar']        = 5
@@ -148,6 +125,45 @@ monolith = {
             layer_map['MF']['start_bar'] = layer_map['MF']['start_bar_pedal']
             layer_map['P'] = nil
         end
+
+        if monolith.flavour == 'BASIC' then
+            layer_map['F']['vol_low'] = 0
+            layer_map['F']['start_bar']  = 5
+            layer_map['MF'] = nil
+            layer_map['P'] = nil
+            layer_map['RT'] = nil
+            layer_map['PEDAL_DOWN'] = nil
+            layer_map['PEDAL_UP'] = nil
+            monolith.bpm = 120
+        end
+
+        if config.bpm then
+            monolith.bpm = config.bpm
+        end
+
+        if config.rt_boost_db then
+            monolith.rt_boost_db = config.rt_boost_db
+        end
+
+        if config.pedal_boost_db then
+            monolith.pedal_boost_db = config.pedal_boost_db
+        end
+
+        if config.using_split then
+            monolith.using_split = config.using_split
+        end
+
+        if config.detailed_naming then
+            monolith.detailed_naming = config.detailed_naming
+        end
+
+        if config.adsr then
+            monolith.adsr = config.adsr
+        end
+
+        if config.note_duration_bars then
+            monolith.note_duration_bars = config.note_duration_bars
+        end
     end,
 
     get_layer_info = function(layer)
@@ -183,7 +199,8 @@ monolith = {
     end,
 
     get_note_duration_bars = function (note_number, layer)
-        if     layer   == 'RT'   then return 2
+        if monolith.flavour == 'BASIC' then return monolith.note_duration_bars 
+        elseif layer == 'RT' then return 2
         elseif monolith.flavour == 'GIMP' and layer == 'PEDAL_UP' then return 4
         elseif layer == 'PEDAL_UP' or layer == 'PEDAL_DOWN' then return 2  
         elseif monolith.flavour == 'GIMP' then return monolith.get_note_duration_bars_v1(note_number, layer)
@@ -213,7 +230,8 @@ monolith = {
     end,
 
     get_num_rr = function (note_number, layer)
-        if     layer == 'RT' or layer == 'F' or monolith.flavour == 'MVP' then return 1
+        if monolith.flavour == 'BASIC' then return monolith.max_rr
+        elseif layer == 'RT' or layer == 'F' or monolith.flavour == 'MVP' then return 1
         elseif monolith.flavour == 'GIMP' then return monolith.get_num_rr_v1(note_number, layer)
         else   return monolith.get_num_rr_v2(note_number, layer)
         end
