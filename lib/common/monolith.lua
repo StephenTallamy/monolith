@@ -55,6 +55,7 @@ monolith = {
     rt_boost_db        = 20,
     pedal_boost_db     = 5,
     note_duration_bars = 7,
+    with_pedal_notes   = true,
     adsr = {
         attack = 0,
         decay = 32.8,
@@ -135,6 +136,7 @@ monolith = {
             layer_map['PEDAL_DOWN'] = nil
             layer_map['PEDAL_UP'] = nil
             monolith.bpm = 120
+            monolith.with_pedal_notes = false
         end
 
         if config.bpm then
