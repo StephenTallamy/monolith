@@ -32,6 +32,10 @@ end
 
 function process_layer(reader, layer, pedal, num_channels, sample_rate, bitrate)
     local layer_info  = monolith.get_layer_info(layer)
+    if layer_info == nil then
+        print('Skipping layer '..layer)
+        return 
+    end
     local root        = monolith.start_note
     local bar_in      = layer_info['start_bar']
     local vol_low     = layer_info['vol_low']
