@@ -193,34 +193,38 @@ end
 write_line('  </groups>')
 write_line('  <ui bgImage="Resources/pictures/'..ui_skin..'.png" width="812" height="375" layoutMode="relative" bgMode="top_left">')
 write_line('    <tab name="main">')
-write_line('      <labeled-knob x="271" y="80" label="NOTES" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="100" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
-for i,group in pairs(groups.notes) do
-    write_line('        <binding type="amp" level="group" position="'..group..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0"  />')
-end
+local x_pos = 671
+write_line('      <labeled-knob x="'..x_pos..'" y="80" label="FX2" type="percent" minValue="0" maxValue="100" textColor="FFFFFFFF" value="0" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+write_line('        <binding type="effect" level="instrument" position="0" parameter="FX_REVERB_ROOM_SIZE" factor="0.01"/>')
 write_line('      </labeled-knob>')
-
+x_pos = x_pos - 100
+write_line('      <labeled-knob x="'..x_pos..'" y="80" label="FX1" type="percent" minValue="0" maxValue="100" textColor="FFFFFFFF" value="0" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+write_line('        <binding type="effect" level="instrument" position="0" parameter="FX_REVERB_WET_LEVEL" factor="0.01"/>')
+write_line('      </labeled-knob>')
+x_pos = x_pos - 100
 if monolith.get_layer_info('RT') ~= nil then
-    write_line('      <labeled-knob x="371" y="80" label="RT" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="60" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+    write_line('      <labeled-knob x="'..x_pos..'" y="80" label="RT" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="60" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
     for i,group in pairs(groups.rt) do
         write_line('        <binding type="amp" level="group" position="'..group..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0"  />')
     end
     write_line('      </labeled-knob>')
+    x_pos = x_pos - 100
 end
 if monolith.get_layer_info('PEDAL_DOWN') ~= nil then
-    write_line('      <labeled-knob x="471" y="80" label="PEDALS" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="60" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+    write_line('      <labeled-knob x="'..x_pos..'" y="80" label="PEDALS" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="60" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
     for i,group in pairs(groups.pedal) do
         write_line('        <binding type="amp" level="group" position="'..group..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0"  />')
     end
     write_line('      </labeled-knob>')
+    x_pos = x_pos - 100
 end
-write_line('      <labeled-knob x="571" y="80" label="FX1" type="percent" minValue="0" maxValue="100" textColor="FFFFFFFF" value="0" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
-write_line('        <binding type="effect" level="instrument" position="0" parameter="FX_REVERB_WET_LEVEL" factor="0.01"/>')
-write_line('      </labeled-knob>')
-write_line('      <labeled-knob x="671" y="80" label="FX2" type="percent" minValue="0" maxValue="100" textColor="FFFFFFFF" value="70" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
-write_line('        <binding type="effect" level="instrument" position="0" parameter="FX_REVERB_ROOM_SIZE" factor="0.01"/>')
+write_line('      <labeled-knob x="'..x_pos..'" y="80" label="NOTES" type="float" minValue="0" maxValue="100" textColor="FFFFFFFF" value="100" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+for i,group in pairs(groups.notes) do
+    write_line('        <binding type="amp" level="group" position="'..group..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0"  />')
+end
 write_line('      </labeled-knob>')
 if num_mics > 1 then
-    local x_pos = 40
+    x_pos = 40
     if num_mics > 3 then
         x_pos = 0  
     end
