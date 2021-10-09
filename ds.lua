@@ -26,6 +26,8 @@ function create_zone(layer, group_name, note_bar_in, note_bar_out, note_duration
     local sample_end   = monolith.get_samples(note_bar_out)
     local note_low     = monolith.get_note_low(root)
 
+    print(string.format("Note %3s (%3d) Bar In %4d Bar Out %4d RR %d Bars %d Start %8d End %8d", note_name, root, note_bar_in, note_bar_out, rr, note_duration_bars, sample_start, sample_end))
+
     write('      <sample hiNote="' .. root..'" loNote="' .. note_low..'" rootNote="' .. root..'"')
     if monolith.using_split then
         file_path = monolith.get_file_name(file_prefix, layer, root, note_low, root, vol_low, vol_high, use_rr, pedal)
@@ -47,6 +49,10 @@ function process_layer(file_path, prefix, layer, pedal)
     if pedal == true then
         bar_in = layer_info['start_bar_pedal']
     end
+
+    print('------------------------------------------------------------------------------')
+    print(string.format("Layer %s Group Prefix %s Bar In %d Vol Low %d Vol High %d", layer, prefix, bar_in, vol_low, vol_high))
+    print('------------------------------------------------------------------------------')
 
     local group_tags = 'MIC_'..prefix
     local group_label
