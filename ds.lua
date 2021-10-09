@@ -39,7 +39,7 @@ end
 
 function process_layer(file_path, prefix, layer, pedal)
     local layer_info  = monolith.get_layer_info(layer)
-    if layer_info == nil then
+    if layer_info == nil or (pedal == true and monolith.with_pedal_notes == false) then
         return false
     end
     local root        = monolith.start_note
@@ -194,11 +194,12 @@ write_line('  </groups>')
 write_line('  <ui bgImage="Resources/pictures/'..ui_skin..'.png" width="812" height="375" layoutMode="relative" bgMode="top_left">')
 write_line('    <tab name="main">')
 local x_pos = 671
-write_line('      <labeled-knob x="'..x_pos..'" y="80" label="FX2" type="percent" minValue="0" maxValue="100" textColor="FFFFFFFF" value="0" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+write_line('      <label x="'..(x_pos-50)..'" y="50" width="110" height="40" text="REVERB" textColor="FFFFFFFF" textSize="20" />')
+write_line('      <labeled-knob x="'..x_pos..'" y="80" label="SIZE" type="percent" minValue="0" maxValue="100" textColor="FFFFFFFF" value="0" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
 write_line('        <binding type="effect" level="instrument" position="0" parameter="FX_REVERB_ROOM_SIZE" factor="0.01"/>')
 write_line('      </labeled-knob>')
 x_pos = x_pos - 100
-write_line('      <labeled-knob x="'..x_pos..'" y="80" label="FX1" type="percent" minValue="0" maxValue="100" textColor="FFFFFFFF" value="0" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+write_line('      <labeled-knob x="'..x_pos..'" y="80" label="LEVEL" type="percent" minValue="0" maxValue="100" textColor="FFFFFFFF" value="0" textSize="20" width="110" height="130" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
 write_line('        <binding type="effect" level="instrument" position="0" parameter="FX_REVERB_WET_LEVEL" factor="0.01"/>')
 write_line('      </labeled-knob>')
 x_pos = x_pos - 100
