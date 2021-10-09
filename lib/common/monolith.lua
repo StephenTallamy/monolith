@@ -164,6 +164,26 @@ monolith = {
         if config.note_duration_bars then
             monolith.note_duration_bars = config.note_duration_bars
         end
+
+        if config.max_rr then
+            monolith.max_rr = config.max_rr
+        end
+
+        if config.note_interval then
+            monolith.note_interval = config.note_interval
+        end
+
+        if config.start_note then
+            monolith.start_note = config.start_note
+        end
+
+        if config.min_note then
+            monolith.min_note = config.min_note
+        end
+
+        if config.num_zones then
+            monolith.num_zones = config.num_zones
+        end
     end,
 
     get_layer_info = function(layer)
