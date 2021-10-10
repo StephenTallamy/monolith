@@ -56,11 +56,12 @@ monolith = {
     pedal_boost_db     = 5,
     note_duration_bars = 7,
     with_pedal_notes   = true,
+    adsr_controls      = false,
     adsr = {
-        attack = 0,
-        decay = 32.8,
-        release = 0.405,
-        sustain = 0
+        attack = {min = 0, max = 5, value = 0},
+        decay = {min = 0, max = 50, value = 32.8},
+        sustain = {min = 0, max = 5, value = 0},
+        release = {min = 0, max = 5, value = 0.405}
     },
 
     configure = function(config)       
@@ -160,7 +161,19 @@ monolith = {
         end
 
         if config.adsr then
-            monolith.adsr = config.adsr
+            for stage,setting in pairs(config.adsr) do
+                if type(setting) == 'table' then
+                    for key,value in pairs(setting) do
+                        monolith.adsr[stage][key] = value
+                    end
+                else
+                    monolith.adsr[stage].value = setting
+                end
+            end
+        end
+
+        if config.adsr_controls then
+            monolith.adsr_controls = config.adsr_controls
         end
 
         if config.note_duration_bars then

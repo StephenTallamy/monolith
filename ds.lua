@@ -87,7 +87,7 @@ function process_layer(file_path, prefix, layer, pedal)
             hicc64=63
             group_label = group_label .. ' notes_without_pedal'
         end
-        write_line('    <group name="'..group_label..'" loCC64="'..locc64..'" hiCC64="'..hicc64..'" tags="'..group_tags..'" attack="'..monolith.adsr.attack..'" decay="'..monolith.adsr.decay..'" sustain="'..monolith.adsr.sustain..'" release="'..monolith.adsr.release..'">')
+        write_line('    <group name="'..group_label..'" loCC64="'..locc64..'" hiCC64="'..hicc64..'" tags="'..group_tags..'" attack="'..monolith.adsr.attack.value..'" decay="'..monolith.adsr.decay.value..'" sustain="'..monolith.adsr.sustain.value..'" release="'..monolith.adsr.release.value..'">')
     end
     
     local file_prefix = string.sub(file_path, 0, -5)
@@ -224,6 +224,19 @@ for i,group in pairs(groups.notes) do
     write_line('        <binding type="amp" level="group" position="'..group..'" parameter="AMP_VOLUME" translation="linear" translationOutputMin="0" translationOutputMax="1.0"  />')
 end
 write_line('      </labeled-knob>')
+if monolith.adsr_controls then
+    x_pos = x_pos - 150
+    for _, stage in ipairs({"attack","decay","sustain","release"}) do
+        local settings = monolith.adsr[stage]
+        write_line('      <label x="'..x_pos..'" y="80" width="20" height="30" text="'..stage:upper():sub(1,1)..'" textColor="FFFFFFFF" textSize="15" />')
+        write_line('      <control x="'..x_pos..'" y="115" parameterName="'..stage..'" style="linear_bar_vertical" type="float" minValue="'..settings.min..'" maxValue="'..settings.max..'" value="'..settings.value..'" width="20" height="70" trackForegroundColor="FFFFFFFF" trackBackgroundColor="FF888888">')
+        for i,group in pairs(groups.notes) do
+            write_line('        <binding type="amp" level="group" position="'..group..'" parameter="ENV_'..stage:upper()..'" translation="linear" translationOutputMin="'..settings.min..'" translationOutputMax="'..settings.max..'" />')
+        end  
+        write_line('      </control>')
+        x_pos = x_pos + 30
+    end
+end
 if num_mics > 1 then
     x_pos = 40
     if num_mics > 3 then
