@@ -142,6 +142,29 @@ GIMPU67={
     flavour="GIMP"
 }
 
+AWE_SYNTH={ 
+    instrument="Awe-Synth",
+    prefix="MAIN",
+    filepath="samples/Awe-Synth.wav",
+    flavour="BASIC",
+    note_duration_bars=7,
+    max_rr=3,
+    note_interval=3,
+    start_note=21,
+    min_note=18,
+    num_zones=21,
+    ui_skin_kontakt="Awe-Synth",
+    ui_skin_ds="Awe-Synth-DS",
+    adsr={
+        attack = 0.01,
+        decay = 32.8,
+        release = 3.5,
+        sustain = 0
+    },
+    adsr_controls=true,
+    using_split=true
+}
+
 Default={
     instrument="Monolith Template",
     prefix="MIC1",
