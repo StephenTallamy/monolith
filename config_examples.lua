@@ -142,6 +142,16 @@ GIMPU67={
     flavour="GIMP"
 }
 
+Gaffer={
+    instrument="The Gaffer",
+    prefix={"m149", "dave", "pitched"},
+    filepath={"samples/The Gaffer m149.wav","samples/The Gaffer dave.wav","samples/The Gaffer Pitched modulated.wav"},
+    ui_skin_kontakt="The_Gaffer",
+    ui_skin_ds="The_Gaffer_DS",
+    using_split=false,
+    flavour="SAME_PEDALS"
+}
+
 AWE_SYNTH={ 
     instrument="Awe-Synth",
     prefix="MAIN",
